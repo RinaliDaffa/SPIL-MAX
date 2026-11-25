@@ -1,0 +1,284 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Apple TV+ "Pure" Design Layer — Adapted from NovaStream (MIT License)
+   Pure #000000 canvas, crisp white accent, tight SF Pro / Inter typography,
+   Apple Liquid Glass surfaces (.p-glass / .p-lens), masked horizontal rails,
+   and multi-form-factor scaling (Mobile · Tablet · Laptop/PC · Smart TV 4K).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.nova-pure {
+  --p-bg: #000000;
+  --p-fg: #f5f5f7;
+  --p-dim: rgba(235, 235, 245, 0.62);
+  --p-faint: rgba(235, 235, 245, 0.34);
+  --p-line: rgba(255, 255, 255, 0.1);
+  --p-surface: rgba(255, 255, 255, 0.06);
+  --p-radius: 14px;
+  --p-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  min-height: 100dvh;
+  background: var(--p-bg);
+  color: var(--p-fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+               'Inter', 'Segoe UI', sans-serif;
+  letter-spacing: -0.012em;
+  font-feature-settings: 'ss01', 'cv01';
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+.nova-pure .p-title {
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.08;
+}
+
+.nova-pure .p-display {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
+.nova-pure .p-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--p-faint);
+}
+
+.nova-pure .p-dim { color: var(--p-dim); }
+.nova-pure .p-faint { color: var(--p-faint); }
+
+/* ── Apple TV Pill Buttons ───────────────────────────────────────────────── */
+.nova-pure .p-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: #ffffff;
+  color: #000000;
+  transition: opacity 200ms var(--p-ease), transform 200ms var(--p-ease), box-shadow 200ms var(--p-ease);
+}
+.nova-pure .p-btn:hover { opacity: 0.88; }
+.nova-pure .p-btn:active { transform: scale(0.97); }
+
+.nova-pure .p-btn-ghost {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--p-fg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+.nova-pure .p-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.19);
+  opacity: 1;
+}
+
+.nova-pure .p-icon-btn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--p-fg);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  transition: background 200ms var(--p-ease), transform 200ms var(--p-ease);
+}
+.nova-pure .p-icon-btn:hover { background: rgba(255, 255, 255, 0.19); }
+.nova-pure .p-icon-btn:active { transform: scale(0.92); }
+
+/* ── Apple Liquid Glass (Top Capsule & Mobile Floating Tab Bar) ──────────── */
+.nova-pure .p-glass {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(24, 24, 28, 0.58) 0%,
+    rgba(16, 16, 20, 0.44) 48%,
+    rgba(24, 24, 28, 0.56) 100%
+  );
+  backdrop-filter: blur(20px) saturate(185%) brightness(1.04);
+  -webkit-backdrop-filter: blur(20px) saturate(185%) brightness(1.04);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow:
+    0 12px 32px -16px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  isolation: isolate;
+}
+
+.nova-pure .p-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 76% at 50% -22%, rgba(255, 255, 255, 0.12), transparent 62%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nova-pure .p-lens {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.09));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 5px 14px -9px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px) saturate(165%);
+  -webkit-backdrop-filter: blur(8px) saturate(165%);
+}
+
+/* ── Apple TV Media Cards ────────────────────────────────────────────────── */
+.nova-pure .p-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--p-radius);
+  background: #0b0b0c;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+  transition: transform 320ms var(--p-ease), box-shadow 320ms var(--p-ease);
+}
+
+.nova-pure .p-card-hit:hover .p-card,
+.nova-pure .p-card-hit:focus-visible .p-card {
+  transform: scale(1.035);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.32), 0 22px 44px -16px rgba(0, 0, 0, 0.92);
+}
+
+.nova-pure .p-card-hit:active .p-card {
+  transform: scale(0.99);
+}
+
+.nova-pure .p-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Top 10 Outlined Rank Typography ─────────────────────────────────────── */
+.nova-pure .top10-num-sur {
+  position: absolute;
+  left: 6px;
+  bottom: -4px;
+  z-index: 5;
+  font-size: 64px;
+  line-height: 0.8;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.72));
+}
+@media (min-width: 768px) {
+  .nova-pure .top10-num-sur { font-size: 84px; left: 8px; }
+}
+@media (min-width: 1800px) {
+  .nova-pure .top10-num-sur { font-size: 108px; left: 10px; }
+}
+
+/* ── Hairline Dividers & Horizontal Masked Rails ─────────────────────────── */
+.nova-pure .p-hair { border-bottom: 1px solid var(--p-line); }
+
+.nova-pure [data-row] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+.nova-pure .p-rail {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.nova-pure .p-rail::-webkit-scrollbar { display: none; }
+.nova-pure .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.nova-pure .no-scrollbar::-webkit-scrollbar { display: none; }
+.nova-pure .p-rail > * { scroll-snap-align: start; }
+
+.nova-pure .p-rail.p-marge {
+  scroll-padding-inline: 1.25rem;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 0.35rem, #000 1.25rem);
+          mask-image: linear-gradient(to right, transparent 0, transparent 0.35rem, #000 1.25rem);
+}
+@media (min-width: 768px) {
+  .nova-pure .p-rail.p-marge {
+    scroll-padding-inline: 2rem;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 0.6rem, #000 2rem);
+            mask-image: linear-gradient(to right, transparent 0, transparent 0.6rem, #000 2rem);
+  }
+}
+@media (min-width: 1800px) {
+  .nova-pure .p-rail.p-marge {
+    scroll-padding-inline: 3.5rem;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 1rem, #000 3.5rem);
+            mask-image: linear-gradient(to right, transparent 0, transparent 1rem, #000 3.5rem);
+  }
+}
+@media (pointer: coarse) {
+  .nova-pure .p-rail.p-marge { scroll-snap-type: x mandatory; }
+}
+
+/* ── Entrance Animation ──────────────────────────────────────────────────── */
+.nova-pure .p-in { animation: pIn 520ms var(--p-ease) both; }
+@keyframes pIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Mobile & Portrait Tablet Safe Area Clearance for Floating Bottom Tab Bar ── */
+@media (max-width: 1023px) {
+  .nova-pure .v2-content {
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Smart TV D-Pad & Keyboard Focus Rings (tvOS 10-foot UI) ─────────────── */
+.nova-pure [data-card]:focus-visible,
+.nova-pure [data-tv-focus]:focus-visible {
+  outline: 2.5px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 4px;
+  border-radius: var(--p-radius);
+}
+
+.nova-pure .p-btn:focus-visible,
+.nova-pure .p-icon-btn:focus-visible {
+  outline: 2.5px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.nova-pure [data-card]:focus {
+  scroll-margin: 140px 48px;
+}
+
+/* ── Smart TV / 4K Large Screen Scaling (1800px+) ────────────────────────── */
+@media (min-width: 1800px) {
+  .nova-pure {
+    --p-radius: 18px;
+  }
+  .nova-pure .p-btn {
+    height: 54px;
+    padding: 0 32px;
+    font-size: 17px;
+  }
+  .nova-pure .p-icon-btn {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-pure .p-in { animation: none; }
+  .nova-pure .p-card,
+  .nova-pure .p-btn { transition: none; }
+}

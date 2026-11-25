@@ -1,0 +1,69 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Apple TV / tvOS Full-Viewport & Smart TV 4K Player Enhancements
+   Extends chaqchase/react-video (Apache-2.0) for 10-foot Smart TV screens,
+   full-viewport cinema mode, and Indonesian learning UX.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.spil-player-stage .rv-root {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
+.spil-player-card .rv-root {
+  border-radius: 20px;
+  box-shadow:
+    0 32px 80px -24px rgba(0, 0, 0, 0.95),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Wider settings & chapters popover on desktop/TV + denser glass so submenus never bleed */
+@container rv (min-width: 640px) {
+  .rv-root [data-part="menu-content"] {
+    width: 292px;
+    background: rgb(18 18 22 / 0.88);
+  }
+}
+
+/* Hide centered Up Next card while the Settings menu is actively open */
+.rv-root:has([data-part="menu-content"][data-state="open"]) [data-part="up-next"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Smart TV / 4K 10-foot UI container scaling */
+@container rv (min-width: 1550px) {
+  .rv-root > * {
+    --rv-scale: 1.32;
+    --rv-inset-scale: 1.75;
+  }
+
+  .rv-root [data-part="menu-content"] {
+    width: 340px;
+  }
+
+  .rv-root [data-part="title-text"] {
+    font-size: 30px;
+  }
+
+  .rv-root [data-part="title-eyebrow"] {
+    font-size: 16px;
+  }
+
+  .rv-root [data-part="title-description"] {
+    font-size: 17px;
+    max-width: 68ch;
+  }
+
+  .rv-root [data-part="current-time"],
+  .rv-root [data-part="remaining-time"] {
+    font-size: 15px;
+  }
+
+  .rv-root [data-panel="episodes"] [data-part="panel-sheet"] {
+    --rv-tile: 300px;
+    padding-block-end: 28px;
+  }
+}
