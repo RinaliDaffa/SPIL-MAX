@@ -3,6 +3,7 @@
   "private": false,
   "version": "1.0.0",
   "description": "SPIL MAX (E-Learning Hub / Edu Stream) — Apple TV+ inspired video learning platform prototype for PT Salam Pacific Indonesia Lines",
+  "author": "RinaliDaffa",
   "license": "MIT",
   "type": "module",
   "scripts": {

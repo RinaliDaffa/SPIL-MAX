@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "SPIL MAX Backend API — Express + TypeScript + SQLite (PostgreSQL-ready) + Media Upload + LARA Reporting",
+  "author": "RinaliDaffa",
   "license": "MIT",
   "type": "module",
   "engines": {
