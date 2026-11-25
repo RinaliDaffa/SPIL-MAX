@@ -13,9 +13,9 @@ import {
   RotateCcw,
   CheckCircle2,
   Sparkles,
+  PlusCircle,
 } from 'lucide-react';
-import { DEFAULT_EMPLOYEE, learningStore, useLearningStore } from '@/services/learningStore';
-import { MODULES } from '@/data/catalog';
+import { learningStore, useLearningStore } from '@/services/learningStore';
 import SearchPure from './SearchPure';
 
 const NAV_ITEMS = [
@@ -59,7 +59,7 @@ export default function NavPure() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { watchedEpisodes, myList } = useLearningStore();
+  const { modules, employee, watchedEpisodes, myList } = useLearningStore();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -85,12 +85,12 @@ export default function NavPure() {
   const activeItem =
     NAV_ITEMS.find((i) => (i.path === '/' ? pathname === '/' : pathname.startsWith(i.path)))?.id || null;
 
-  const totalEpisodes = MODULES.reduce((acc, m) => acc + m.episodes.length, 0);
+  const totalEpisodes = modules.reduce((acc, m) => acc + m.episodes.length, 0);
   const completedCount = watchedEpisodes.length;
-  const totalHours = DEFAULT_EMPLOYEE.baseCompletedHours + Math.round(completedCount * 0.5);
-  const hoursPct = Math.min(100, Math.round((totalHours / DEFAULT_EMPLOYEE.annualTargetHours) * 100));
+  const totalHours = employee.baseCompletedHours + Math.round(completedCount * 0.5);
+  const hoursPct = Math.min(100, Math.round((totalHours / employee.annualTargetHours) * 100));
 
-  const initials = DEFAULT_EMPLOYEE.name
+  const initials = employee.name
     .split(' ')
     .slice(0, 2)
     .map((n) => n[0])
@@ -188,7 +188,7 @@ export default function NavPure() {
                 {initials}
               </span>
               <span className="hidden sm:inline text-[12.5px] tv:text-[14.5px] font-medium text-white/85 max-w-[110px] truncate">
-                {DEFAULT_EMPLOYEE.name.split(' ')[0]}
+                {employee.name.split(' ')[0]}
               </span>
             </button>
           </div>
@@ -263,9 +263,9 @@ export default function NavPure() {
                     {initials}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14.5px] font-semibold text-white truncate">{DEFAULT_EMPLOYEE.name}</p>
-                    <p className="text-[11.5px] text-white/50 truncate">{DEFAULT_EMPLOYEE.division}</p>
-                    <p className="text-[11px] text-white/35 truncate">{DEFAULT_EMPLOYEE.location}</p>
+                    <p className="text-[14.5px] font-semibold text-white truncate">{employee.name}</p>
+                    <p className="text-[11.5px] text-white/50 truncate">{employee.division}</p>
+                    <p className="text-[11px] text-white/35 truncate">{employee.location}</p>
                   </div>
                 </div>
 
@@ -274,7 +274,7 @@ export default function NavPure() {
                   <div className="flex items-baseline justify-between mb-1.5">
                     <span className="text-[12px] text-white/60">Jam Belajar LARA</span>
                     <span className="text-[13px] font-semibold tabular-nums text-white">
-                      {totalHours}j <span className="text-white/40 font-normal">/ {DEFAULT_EMPLOYEE.annualTargetHours}j</span>
+                      {totalHours}j <span className="text-white/40 font-normal">/ {employee.annualTargetHours}j</span>
                     </span>
                   </div>
                   <div className="h-1.5 rounded-full bg-white/12 overflow-hidden">
@@ -285,12 +285,22 @@ export default function NavPure() {
                   </div>
                   <div className="flex items-center justify-between mt-2 text-[11px] text-white/45">
                     <span>{completedCount} dari {totalEpisodes} video selesai</span>
-                    <span>{MODULES.length} Kompetensi</span>
+                    <span>{modules.length} Kompetensi</span>
                   </div>
                 </div>
               </div>
 
               <div className="p-1.5">
+                <MenuRow
+                  icon={PlusCircle}
+                  badge="CMS"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate('/studio');
+                  }}
+                >
+                  Studio Kurator (Tambah Modul/Video)
+                </MenuRow>
                 <MenuRow
                   icon={Clock}
                   badge={`${completedCount} selesai`}

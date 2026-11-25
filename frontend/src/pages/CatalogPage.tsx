@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import FilterBar, { EMPTY_FILTERS, type CatalogFilters } from '@/components/FilterBar';
 import GridPure from '@/components/GridPure';
-import { MODULES } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 interface CatalogPageProps {
@@ -13,19 +12,19 @@ interface CatalogPageProps {
  */
 export default function CatalogPage({ mode }: CatalogPageProps) {
   const [filters, setFilters] = useState<CatalogFilters>(EMPTY_FILTERS);
-  const { watchedEpisodes } = useLearningStore();
+  const { modules, watchedEpisodes } = useLearningStore();
 
   const baseModules = useMemo(() => {
-    if (mode === 'mandatory') return MODULES.filter((m) => m.mandatoryFromSuperior);
-    if (mode === 'external') return MODULES.filter((m) => m.kind === 'Eksternal');
-    return MODULES;
-  }, [mode]);
+    if (mode === 'mandatory') return modules.filter((m) => m.mandatoryFromSuperior);
+    if (mode === 'external') return modules.filter((m) => m.kind === 'Eksternal');
+    return modules;
+  }, [mode, modules]);
 
   const { watchedModuleIds, moduleProgressMap } = useMemo(() => {
     const watchedSet = new Set(watchedEpisodes);
     const modWatched = new Set<string>();
     const modProg: Record<string, number> = {};
-    for (const m of MODULES) {
+    for (const m of modules) {
       const done = m.episodes.filter((e) =>
         watchedSet.has(learningStore.keyOf(m.id, e.id))
       ).length;
@@ -33,7 +32,7 @@ export default function CatalogPage({ mode }: CatalogPageProps) {
       else if (done > 0) modProg[m.id] = Math.round((done / m.episodes.length) * 100);
     }
     return { watchedModuleIds: modWatched, moduleProgressMap: modProg };
-  }, [watchedEpisodes]);
+  }, [modules, watchedEpisodes]);
 
   const kinds = useMemo(() => {
     const map = new Map<string, number>();

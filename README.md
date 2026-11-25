@@ -1,130 +1,105 @@
-# SPIL MAX — E-Learning Hub & Edu Stream (Apple TV+ Edition)
+# SPIL MAX — E-Learning Hub & Edu Stream (Apple TV+ Full-Stack Edition)
 
-Prototipe platform streaming video pembelajaran (**E-Learning Hub / Edu Stream**) bergaya **Apple TV+ / tvOS** untuk **PT Salam Pacific Indonesia Lines (SPIL)**. Dirancang untuk menayangkan seluruh video pembelajaran berbasis **Kamus Kompetensi SPIL** (1 kompetensi = 4 level video), penugasan atasan & inisiatif **LARA** (*Learning Automation for Reporting Administration*), serta kurasi materi pembelajaran eksternal.
-
----
-
-## Mengapa Menggunakan Arsitektur Open-Source Ini?
-
-Alih-alih membuat desain CSS spekulatif dari nol atau memakai repo latihan lama yang bergantung pada API key eksternal (TMDB/Firebase), repositori ini mengadopsi langsung dua sistem desain open-source bergaya Apple TV kelas produksi:
-
-1. **Antarmuka Katalog & Navigasi Apple TV+ "Pure"** — diadaptasi dari [`why7726/NovaStream`](https://github.com/why7726/NovaStream) (`src/v2/pure/` & `pure.css`, **MIT License**):
-   - Kanvas hitam murni (`#000000`), tipografi ketat `SF Pro Display` / `Inter`, kurva transisi khas Apple `cubic-bezier(0.32, 0.72, 0, 1)`.
-   - Kapsul navigasi **Apple Liquid Glass** melayang di atas pada Laptop/PC/Smart TV dan di bawah layar pada HP & Tablet Portrait (`env(safe-area-inset-bottom)`).
-   - **Showcase Hero** layar penuh dengan *auto-progress indicator*, dukungan *swipe* sentuh, dan tombol pill khas Apple TV.
-   - **Horizontal Masked Rails** (`Lanjutkan Belajar`, `Dari Atasan & Modul Wajib`, `Top 10 Modul Terpopuler` dengan angka outline transparan, `Core Competency`, `Kepelabuhanan & K3`, `Leadership & Managerial`, `Kurasi Eksternal`).
-   - **Navigasi D-Pad Smart TV & Keyboard Spatial** (`CardKeyNav`) untuk berpindah antarkartu dan antarbaris menggunakan tombol panah remote TV / keyboard.
-
-2. **Apple TV / iOS Liquid Glass Video Player** — menggunakan *core* dari [`chaqchase/react-video`](https://github.com/chaqchase/react-video) (`react-video-kit` v4, **Apache-2.0 License**, di-*vendor* secara bersih di `src/vendor/react-video/`):
-   - Kontrol kaca *specular rim* khas Apple TV / iOS (`--rv-glass`, `--rv-rim`).
-   - **Daftar Level (`Episodes Shelf`)** langsung di dalam *fullscreen player* untuk berpindah antar Level 1–4 disertai indikator *Now Playing* dan progres tontonan.
-   - **Panel Info Modul (`Info Sheet`)** langsung di atas video untuk melihat ringkasan kompetensi dan pemateri.
-   - **Transkrip Materi Interaktif** tersinkronisasi (klik kalimat mana pun untuk melompat ke detiknya) + ringkasan *Key Takeaways* tiap level.
-   - **Multi-Resolusi (`720p HD` / `360p Hemat Data`)** + dukungan native **HLS (`.m3u8`)** melalui `hls.js`.
-   - **Subtitle Dwibahasa (`Bahasa Indonesia` & `English` WebVTT)**, **Bab Materi (`Chapters` WebVTT)** pada *timeline*, **Lewati Pembuka (`Skip Intro`)**, **Auto-Next Level Berikutnya**, **Picture-in-Picture (PiP)**, dan **AirPlay**.
+Platform streaming video pembelajaran (**E-Learning Hub / Edu Stream**) bergaya **Apple TV+ / tvOS** untuk **PT Salam Pacific Indonesia Lines (SPIL)**. Dirancang untuk menayangkan video pembelajaran berbasis **Kamus Kompetensi SPIL** (`1 kompetensi = 4 level video`), penugasan wajib atasan & inisiatif **LARA** (*Learning Automation for Reporting Administration*), serta kurasi materi eksternal.
 
 ---
 
-## Dukungan Multi-Perangkat (Responsive)
+## Fitur Utama
 
-| Kelas Perangkat | Ukuran Viewport | Adaptasi Antarmuka |
-| :--- | :--- | :--- |
-| **HP (Mobile)** | `< 640px` (mis. `390×844`) | Bar kapsul Liquid Glass di bawah layar, *swipe* horizontal pada Hero & Rail, *drag-to-dismiss* iOS bottom sheet untuk filter/level, kontrol player ringkas (`@container rv`). |
-| **Tablet (iPad)** | `640px – 1023px` (mis. `820×1180`) | Header bersih tanpa tumpang tindih, kapsul navigasi bawah yang lebih lebar, grid katalog 4–5 kolom proporsional. |
-| **Laptop & PC** | `1024px – 1799px` (mis. `1440×900`) | Kapsul navigasi Liquid Glass terpusat di atas, tombol panah *snap-to-card* saat *hover*, panel samping transkrip pada video player. |
-| **Smart TV (1080p / 4K)** | `≥ 1800px` (`tv:` / `4k:`) | Skala tipografi & kartu *10-foot UI*, *focus ring* kontras tinggi, navigasi penuh menggunakan tombol `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` / `Enter` / `Escape`. |
+1. **Antarmuka Apple TV+ "Pure" & Responsif Penuh** (HP · Tablet · Laptop/PC · Smart TV 4K):
+   - Diadaptasi dari open-source [`why7726/NovaStream`](https://github.com/why7726/NovaStream) (MIT License) tanpa desain spekulatif.
+   - Navigasi kapsul **Apple Liquid Glass** (melayang di atas pada Laptop/PC/Smart TV, melayang di bawah layar pada HP & Tablet Portrait).
+   - Navigasi **D-Pad Remote Smart TV & Keyboard Spatial** (`ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight`, `Enter`, `Escape`).
 
----
+2. **Apple TV / iOS Liquid Glass Video Player**:
+   - Ditenagai *core* [`chaqchase/react-video`](https://github.com/chaqchase/react-video) (`react-video-kit` v4, Apache-2.0 License).
+   - **Continue Where I Left Off** lintas perangkat: menyimpan detik terakhir secara otomatis saat diputar, dijeda, maupun saat tab ditutup (`navigator.sendBeacon`), lalu melanjutkan pemutaran tepat di detik terakhir disertai indikator *Melanjutkan dari mm:ss · Ulang dari awal*.
+   - **Daftar Level (`Episodes Shelf`)**, **Panel Info Modul**, **Transkrip Materi Interaktif** berbahasa Indonesia, **Subtitle ID/EN (`.vtt`)**, **Bab Materi (`Chapters`)**, **Multi-Resolusi (`720p HD` / `360p` / HLS `.m3u8`)**, **Skip Intro**, **PiP**, dan **AirPlay**.
 
-## Cara Menjalankan di Lokal
+3. **Studio Kurator (`/studio`) — Penambahan Modul & Video Dinamis**:
+   - Halaman CMS bergaya Apple dark-glass untuk menambah modul kompetensi baru, mengunggah file video `.mp4` / subtitle `.vtt` langsung ke server (atau menempelkan URL CDN/HLS `.m3u8`), serta mengunduh laporan **CSV LARA** (`/api/lara/report?format=csv`).
 
-Tidak memerlukan `.env` atau API key apa pun — seluruh aset poster, video demo multi-resolusi, dan subtitle WebVTT sudah disertakan secara lokal agar langsung berjalan.
-
-```bash
-# 1. Masuk ke direktori repositori
-cd Website-Video
-
-# 2. Instal dependensi
-npm install
-
-# 3. Jalankan server pengembangan (http://localhost:5173)
-npm run dev
-
-# 4. Cek tipe TypeScript & build produksi
-npm run build
-npm run preview
-```
+4. **Siap Handover & Deploy oleh Tim IT SPIL**:
+   - Dilengkapi `docker-compose.yml`, `Dockerfile` multi-stage (`frontend` Nginx reverse-proxy + `backend` Node 22 LTS + SQLite WAL), skema PostgreSQL (`backend/sql/schema.postgres.sql`), GitHub Actions CI, dan dokumen teknis lengkap di [`docs/IT_HANDOVER.md`](./docs/IT_HANDOVER.md).
 
 ---
 
-## Struktur Folder Utama (Panduan Kolaborasi Tim)
+## Struktur Monorepo & Alur Kerja Git Tim (`main`, `frontend`, `backend`)
+
+Repositori ini menggunakan struktur **Full-Stack Monorepo** agar frontend dan backend selalu sinkron dan dapat di-*deploy* Tim IT hanya dengan satu perintah `docker compose up -d --build`:
 
 ```text
-├── public/
-│   ├── art/               # Poster 2:3 (*-poster.jpg) & Backdrop 16:9 (*-wide.jpg)
-│   ├── brand/             # Logo resmi SPIL (spil-logo.png)
-│   ├── media/             # Video MP4 fast-start (720p & 360p) — siap diganti URL CDN/HLS
-│   └── vtt/               # Track subtitle (.id.vtt, .en.vtt) & bab materi (*-chapters.vtt)
-├── src/
-│   ├── components/
-│   │   ├── AppleTvPlayer.tsx   # Wrapper player Apple TV + telemetri progres + panel transkrip
-│   │   ├── CardKeyNav.tsx      # Navigasi D-Pad Smart TV & keyboard antar-rail
-│   │   ├── CardPure.tsx        # Kartu modul poster (2:3) & widescreen (16:9)
-│   │   ├── FilterBar.tsx       # Filter kompetensi, divisi, status selesai, & urutan
-│   │   ├── GridPure.tsx        # Grid responsif katalog & Daftar Saya
-│   │   ├── HeroPure.tsx        # Hero showcase beranda
-│   │   ├── NavPure.tsx         # Navigasi Liquid Glass + kartu profil Jam Belajar LARA
-│   │   ├── PickerPure.tsx      # Dropdown kaca desktop / iOS bottom sheet mobile
-│   │   ├── RowPure.tsx         # Rail horizontal dengan mask fade tepi kiri
-│   │   ├── SearchPure.tsx      # Pencarian instan layar penuh (⌘K / Ctrl+K)
-│   │   └── SynopsisPure.tsx    # Modal detail sinopsis & capaian pembelajaran
-│   ├── data/
-│   │   └── catalog.ts          # Sumber data modul & level SPIL (titik integrasi API/LARA)
-│   ├── pages/                  # Halaman rute aplikasi (Home, Catalog, Detail, Watch, MyList, History)
-│   ├── services/
-│   │   └── learningStore.ts    # State reaktif progres tontonan, riwayat LARA, & Daftar Saya
-│   ├── styles/
-│   │   ├── apple-tv-pure.css   # Token desain & komponen Apple TV+ Pure
-│   │   └── player-tv.css       # Kustomisasi layar penuh & skala Smart TV 4K untuk player
-│   ├── types/
-│   │   └── learning.ts         # Definisi tipe TypeScript modul, episode, & progres
-│   └── vendor/
-│       └── react-video/        # Core Apple TV Liquid Glass Player (Apache-2.0)
-├── vercel.json                 # Konfigurasi rewrite SPA siap deploy ke Vercel
-└── netlify.toml                # Konfigurasi redirect SPA siap deploy ke Netlify
+SPIL-MAX/
+├── frontend/               # Aplikasi Web React + Vite + TypeScript + Tailwind + Apple TV Player
+│   ├── Dockerfile          # Multi-stage build -> Nginx 1.27 Alpine
+│   ├── nginx.conf          # SPA router + Reverse proxy /api & HTTP 206 /uploads
+│   └── src/                # Komponen UI, AppleTvPlayer, StudioPage (/studio), & store
+├── backend/                # REST API Node.js 22 + Express + TypeScript + SQLite WAL
+│   ├── Dockerfile          # Production container non-root + healthcheck
+│   ├── sql/                # Skema PostgreSQL (schema.postgres.sql) untuk skala enterprise
+│   └── src/                # Server API, database repository, upload media, & LARA CSV/JSON
+├── docs/
+│   └── IT_HANDOVER.md      # Panduan deployment, SSO header, & infrastruktur untuk Tim IT SPIL
+├── scripts/
+│   └── dev.mjs             # Menjalankan backend (:4000) + frontend (:5173) secara bersamaan
+└── docker-compose.yml      # Orkestrasi produksi siap pakai (Frontend + Backend + Volumes)
+```
+
+### Pembagian Cabang (Branch) untuk Pengembangan Tim
+Tersedia 3 cabang di GitHub untuk kolaborasi rapi tanpa konflik:
+- **`main`**: Cabang utama terintegrasi yang stabil dan siap di-*deploy* oleh Tim IT.
+- **`frontend`**: Cabang kerja khusus pengembangan antarmuka (`frontend/*`).
+- **`backend`**: Cabang kerja khusus pengembangan API, database, dan integrasi LARA (`backend/*`).
+
+Contoh alur kerja bersama rekan tim:
+```bash
+# Developer Frontend
+git checkout frontend
+git pull origin main
+# ... kerjakan di dalam folder frontend/ ...
+git push origin frontend
+
+# Developer Backend
+git checkout backend
+git pull origin main
+# ... kerjakan di dalam folder backend/ ...
+git push origin backend
+```
+Setelah fitur selesai diuji, buat *Pull Request* dari `frontend` atau `backend` menuju `main`.
+
+---
+
+## Cara Menjalankan di Lokal (Development)
+
+Pastikan menggunakan **Node.js ≥ 22.5.0** (sudah mendukung `node:sqlite` bawaan).
+
+```bash
+# 1. Instal dependensi backend & frontend sekaligus
+npm run install:all
+
+# 2. Jalankan Backend (:4000) & Frontend (:5173) secara bersamaan
+npm run dev
+```
+- Aplikasi Web: `http://localhost:5173`
+- Studio Kurator (Tambah Modul & Video): `http://localhost:5173/studio`
+- Healthcheck API: `http://localhost:4000/api/health`
+- Laporan CSV LARA: `http://localhost:4000/api/lara/report?format=csv`
+
+Jika ingin menjalankan terpisah di terminal berbeda:
+```bash
+npm run dev:backend   # Port 4000
+npm run dev:frontend  # Port 5173 (otomatis mem-proxy /api & /uploads ke :4000)
 ```
 
 ---
 
-## Cara Menghubungkan Video Asli `elearning-spil` / Backend LARA
+## Cara Deploy dengan Docker (Untuk Tim IT)
 
-1. **Mengganti Sumber Video MP4 atau HLS (`.m3u8`)**:
-   Buka `src/data/catalog.ts`. Setiap level di dalam `episodes` mendukung multi-resolusi MP4 maupun stream adaptif HLS:
-   ```ts
-   renditions: [
-     { src: 'https://cdn.spil.co.id/elearning/k3/level-1-1080p.mp4', type: 'video/mp4', label: '1080p FHD', height: 1080 },
-     { src: 'https://cdn.spil.co.id/elearning/k3/level-1-720p.mp4', type: 'video/mp4', label: '720p HD', height: 720 },
-   ]
-   ```
-   *(Atau arahkan langsung ke manifest `.m3u8` karena plugin `hls()` sudah terpasang aktif di `AppleTvPlayer.tsx`.)*
-
-2. **Menghubungkan Progres Tontonan ke Backend LARA**:
-   Buka `src/services/learningStore.ts`. Fungsi `savePlaybackProgress()` dipanggil secara otomatis oleh player setiap detik saat video berjalan, dan `markEpisodeWatched()` dipanggil ketika progres mencapai `≥ 90%`. Cukup tambahkan panggilan `fetch('/api/lara/progress', ...)` di dalam kedua fungsi tersebut untuk menyinkronkan jam belajar karyawan ke database LARA.
-
----
-
-## Pintasan Keyboard & Remote Smart TV
-
-- **Di Katalog / Beranda**:
-  - `ArrowUp` / `ArrowDown` / `ArrowLeft` / `ArrowRight` — berpindah fokus antarkartu & antarbaris modul
-  - `Enter` / `Space` — membuka modul atau memutar level yang difokuskan
-  - `⌘K` / `Ctrl+K` — membuka pencarian instan
-- **Di Dalam Video Player**:
-  - `Space` / `K` — Putar / Jeda
-  - `ArrowLeft` / `ArrowRight` — Mundur / Maju 10 detik (atau *double-tap* sisi kiri/kanan pada layar sentuh)
-  - `F` — Layar penuh (*Fullscreen*)
-  - `M` — Bisukan suara (*Mute*)
-  - `Escape` — Keluar dari panel/fullscreen atau kembali ke halaman detail modul
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+Aplikasi langsung aktif di `http://localhost:8080`. Panduan lengkap SSO, volume NAS, dan PostgreSQL tersedia di [`docs/IT_HANDOVER.md`](./docs/IT_HANDOVER.md).
 
 ---
 

@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import GridPure from '@/components/GridPure';
-import { MODULES } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 interface CollectionState {
@@ -16,21 +15,21 @@ export default function CollectionPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state as CollectionState | null) || null;
-  const { watchedEpisodes } = useLearningStore();
+  const { modules, watchedEpisodes } = useLearningStore();
 
   const items = useMemo(() => {
     if (state?.itemIds?.length) {
       return state.itemIds
-        .map((id) => MODULES.find((m) => m.id === id))
+        .map((id) => modules.find((m) => m.id === id))
         .filter((m): m is NonNullable<typeof m> => Boolean(m));
     }
-    return MODULES;
-  }, [state, slug]);
+    return modules;
+  }, [modules, state, slug]);
 
   const watchedModuleIds = useMemo(() => {
     const watchedSet = new Set(watchedEpisodes);
     const out = new Set<string>();
-    for (const m of MODULES) {
+    for (const m of modules) {
       if (
         m.episodes.length > 0 &&
         m.episodes.every((e) => watchedSet.has(learningStore.keyOf(m.id, e.id)))
@@ -39,7 +38,7 @@ export default function CollectionPage() {
       }
     }
     return out;
-  }, [watchedEpisodes]);
+  }, [modules, watchedEpisodes]);
 
   const title = state?.title || 'Koleksi Modul SPIL MAX';
 

@@ -4,7 +4,6 @@ import { Play, X } from 'lucide-react';
 import HeroPure from '@/components/HeroPure';
 import RowPure from '@/components/RowPure';
 import CardPure from '@/components/CardPure';
-import { MODULES, getHeroModules, getTop10Modules } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
@@ -15,10 +14,17 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
  */
 export default function HomePage() {
   const navigate = useNavigate();
-  const { progress, watchedEpisodes } = useLearningStore();
+  const { modules, progress, watchedEpisodes } = useLearningStore();
 
-  const heroModules = useMemo(() => getHeroModules(), []);
-  const top10 = useMemo(() => getTop10Modules(), []);
+  const heroModules = useMemo(() => modules.filter((m) => m.featuredInHero), [modules]);
+  const top10 = useMemo(
+    () =>
+      [...modules]
+        .filter((m) => m.topRank != null)
+        .sort((a, b) => (a.topRank || 99) - (b.topRank || 99))
+        .slice(0, 10),
+    [modules]
+  );
 
   // Compute module-level completion & progress maps
   const { watchedModuleIds, moduleProgressMap, continueItems } = useMemo(() => {
@@ -26,7 +32,7 @@ export default function HomePage() {
     const modWatched = new Set<string>();
     const modProg: Record<string, number> = {};
 
-    for (const m of MODULES) {
+    for (const m of modules) {
       const doneCount = m.episodes.filter((e) =>
         watchedSet.has(learningStore.keyOf(m.id, e.id))
       ).length;
@@ -46,11 +52,10 @@ export default function HomePage() {
       })
       .sort((a, b) => b.updatedAt - a.updatedAt)
       .map((entry) => {
-        const mod = MODULES.find((m) => m.id === entry.moduleId);
+        const mod = modules.find((m) => m.id === entry.moduleId);
         const ep = mod?.episodes.find((e) => e.id === entry.episodeId);
         if (!mod || !ep) return null;
         const pct = Math.min(100, Math.round((entry.currentTime / entry.duration) * 100));
-        // Scale remaining display minutes proportionally to actual training duration
         const parsedMins = parseInt(ep.durationText, 10) || 12;
         const minsLeft = Math.max(1, Math.round(parsedMins * (1 - entry.currentTime / entry.duration)));
         return { mod, ep, pct, minsLeft };
@@ -62,19 +67,19 @@ export default function HomePage() {
       moduleProgressMap: modProg,
       continueItems: cwList,
     };
-  }, [progress, watchedEpisodes]);
+  }, [modules, progress, watchedEpisodes]);
 
-  const fromSuperior = useMemo(() => MODULES.filter((m) => m.mandatoryFromSuperior), []);
-  const coreModules = useMemo(() => MODULES.filter((m) => m.kind === 'Core'), []);
+  const fromSuperior = useMemo(() => modules.filter((m) => m.mandatoryFromSuperior), [modules]);
+  const coreModules = useMemo(() => modules.filter((m) => m.kind === 'Core'), [modules]);
   const operationalModules = useMemo(
-    () => MODULES.filter((m) => m.kind === 'Operasional & K3'),
-    []
+    () => modules.filter((m) => m.kind === 'Operasional & K3'),
+    [modules]
   );
   const managerialModules = useMemo(
-    () => MODULES.filter((m) => m.kind === 'Managerial' || m.id === 'sizing-up-people'),
-    []
+    () => modules.filter((m) => m.kind === 'Managerial' || m.id === 'sizing-up-people'),
+    [modules]
   );
-  const externalModules = useMemo(() => MODULES.filter((m) => m.kind === 'Eksternal'), []);
+  const externalModules = useMemo(() => modules.filter((m) => m.kind === 'Eksternal'), [modules]);
 
   return (
     <div className="pb-6 md:pb-16">

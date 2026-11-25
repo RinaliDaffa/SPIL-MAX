@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Check } from 'lucide-react';
-import { MODULES } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
@@ -9,7 +8,7 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
  */
 export default function HistoryPage() {
   const navigate = useNavigate();
-  const { watchedEpisodes, progress } = useLearningStore();
+  const { modules, watchedEpisodes, progress } = useLearningStore();
 
   const entries = useMemo(() => {
     const watchedSet = new Set(watchedEpisodes);
@@ -26,7 +25,7 @@ export default function HistoryPage() {
       pct: number;
     }[] = [];
 
-    for (const m of MODULES) {
+    for (const m of modules) {
       for (const ep of m.episodes) {
         const key = learningStore.keyOf(m.id, ep.id);
         const completed = watchedSet.has(key);
@@ -52,7 +51,7 @@ export default function HistoryPage() {
       }
     }
     return list;
-  }, [watchedEpisodes, progress]);
+  }, [modules, watchedEpisodes, progress]);
 
   return (
     <div className="min-h-screen px-5 md:px-8 tv:px-14 pt-20 md:pt-24 tv:pt-32 pb-14 max-w-[1100px] tv:max-w-[1500px] mx-auto">

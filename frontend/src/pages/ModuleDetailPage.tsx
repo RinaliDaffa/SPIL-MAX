@@ -12,7 +12,6 @@ import {
 import PickerPure from '@/components/PickerPure';
 import SynopsisPure from '@/components/SynopsisPure';
 import RowPure from '@/components/RowPure';
-import { MODULES, getModuleBySlug } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
@@ -23,12 +22,15 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
 export default function ModuleDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { progress, watchedEpisodes, myList } = useLearningStore();
+  const { modules, progress, watchedEpisodes, myList } = useLearningStore();
 
   const [levelFilter, setLevelFilter] = useState<string>('all');
   const [synopsisOpen, setSynopsisOpen] = useState(false);
 
-  const module = useMemo(() => getModuleBySlug(slug), [slug]);
+  const module = useMemo(
+    () => modules.find((m) => m.slug === slug || m.id === slug),
+    [modules, slug]
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -86,7 +88,7 @@ export default function ModuleDetailPage() {
       ? module.episodes
       : module.episodes.filter((ep) => String(ep.levelNumber) === levelFilter);
 
-  const relatedModules = MODULES.filter(
+  const relatedModules = modules.filter(
     (m) => m.id !== module.id && (m.kind === module.kind || m.mandatoryFromSuperior)
   ).slice(0, 8);
 

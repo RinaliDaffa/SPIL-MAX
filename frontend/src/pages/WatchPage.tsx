@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppleTvPlayer from '@/components/AppleTvPlayer';
-import { getModuleBySlug } from '@/data/catalog';
+import { useLearningStore } from '@/services/learningStore';
 
 /**
  * Full-Viewport Cinema Playback Route (`/tonton/:slug/:episodeId`).
@@ -9,8 +9,12 @@ import { getModuleBySlug } from '@/data/catalog';
 export default function WatchPage() {
   const { slug, episodeId } = useParams<{ slug: string; episodeId: string }>();
   const navigate = useNavigate();
+  const { modules } = useLearningStore();
 
-  const module = useMemo(() => getModuleBySlug(slug), [slug]);
+  const module = useMemo(
+    () => modules.find((m) => m.slug === slug || m.id === slug),
+    [modules, slug]
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

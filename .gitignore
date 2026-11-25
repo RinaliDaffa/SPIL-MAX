@@ -1,13 +1,24 @@
 # Dependencies
 node_modules
+frontend/node_modules
+backend/node_modules
 .pnp
 .pnp.js
 
-# Build output
+# Build output & caches
 dist
+frontend/dist
+backend/dist
 dist-ssr
 *.local
 *.tsbuildinfo
+
+# Runtime database & uploaded media (persisted via Docker volumes in production)
+backend/storage/*.sqlite
+backend/storage/*.sqlite-shm
+backend/storage/*.sqlite-wal
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
 
 # Logs
 logs
@@ -29,6 +40,22 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# AI IDE / Agent configs & scratch files (never commit to repository)
+.gemini/
+.claude/
+.cursor/
+.windsurf/
+.agent/
+.agents/
+.github/copilot*
+.aider*
+.cursorrules
+.clinerules
+.windsurfrules
+CLAUDE.md
+AGENTS.md
+GEMINI.md
 
 # Environment
 .env

@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GridPure from '@/components/GridPure';
-import { MODULES } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
@@ -9,17 +8,17 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
  */
 export default function MyListPage() {
   const navigate = useNavigate();
-  const { myList, watchedEpisodes } = useLearningStore();
+  const { modules, myList, watchedEpisodes } = useLearningStore();
 
   const items = useMemo(
-    () => myList.map((id) => MODULES.find((m) => m.id === id)).filter((m): m is NonNullable<typeof m> => Boolean(m)),
-    [myList]
+    () => myList.map((id) => modules.find((m) => m.id === id)).filter((m): m is NonNullable<typeof m> => Boolean(m)),
+    [modules, myList]
   );
 
   const watchedModuleIds = useMemo(() => {
     const watchedSet = new Set(watchedEpisodes);
     const out = new Set<string>();
-    for (const m of MODULES) {
+    for (const m of modules) {
       if (
         m.episodes.length > 0 &&
         m.episodes.every((e) => watchedSet.has(learningStore.keyOf(m.id, e.id)))
@@ -28,7 +27,7 @@ export default function MyListPage() {
       }
     }
     return out;
-  }, [watchedEpisodes]);
+  }, [modules, watchedEpisodes]);
 
   return (
     <div className="min-h-screen px-5 md:px-8 tv:px-14 pt-20 md:pt-24 tv:pt-32 pb-14 max-w-[1600px] tv:max-w-[2200px] mx-auto">

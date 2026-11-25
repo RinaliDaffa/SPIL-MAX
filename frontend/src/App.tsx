@@ -10,6 +10,7 @@ const WatchPage = React.lazy(() => import('@/pages/WatchPage'));
 const MyListPage = React.lazy(() => import('@/pages/MyListPage'));
 const HistoryPage = React.lazy(() => import('@/pages/HistoryPage'));
 const CollectionPage = React.lazy(() => import('@/pages/CollectionPage'));
+const StudioPage = React.lazy(() => import('@/pages/StudioPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -46,6 +47,7 @@ function AppShell() {
             <Route path="/eksternal" element={<CatalogPage mode="external" />} />
             <Route path="/daftar-saya" element={<MyListPage />} />
             <Route path="/riwayat" element={<HistoryPage />} />
+            <Route path="/studio" element={<StudioPage />} />
             <Route path="/koleksi/:slug" element={<CollectionPage />} />
             <Route path="/modul/:slug" element={<ModuleDetailPage />} />
             <Route path="/tonton/:slug/:episodeId" element={<WatchPage />} />

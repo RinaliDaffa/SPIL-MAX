@@ -7,7 +7,7 @@ export type CompetencyKind =
 
 export interface RenditionSource {
   src: string;
-  type: 'video/mp4';
+  type: 'video/mp4' | 'application/x-mpegURL';
   label: string;
   height: number;
 }
@@ -22,12 +22,12 @@ export interface CaptionTrack {
 export interface LearningEpisode {
   id: string;
   levelNumber: number;
-  levelLabel: string; // e.g. "Level 1 · Dasar", "Level 2 · Praktik"
+  levelLabel: string;
   title: string;
   description: string;
   durationSeconds: number;
-  durationText: string; // e.g. "12 mnt"
-  still: string; // 16:9 thumbnail
+  durationText: string;
+  still: string;
   renditions: RenditionSource[];
   captions: CaptionTrack[];
   chaptersVtt: string;
@@ -44,15 +44,15 @@ export interface LearningModule {
   competency: string;
   kind: CompetencyKind;
   year: number;
-  badge?: string; // e.g. "WAJIB K3", "DARI ATASAN", "LARA Q1", "EKSTERNAL", "BARU"
+  badge?: string;
   mandatoryFromSuperior?: boolean;
-  topRank?: number; // 1..10 for Top 10 SPIL Modules
+  topRank?: number;
   featuredInHero?: boolean;
   heroTagline?: string;
   summary: string;
   objectives: string[];
-  poster: string; // 2:3 vertical card art
-  backdrop: string; // 16:9 widescreen hero/card art
+  poster: string;
+  backdrop: string;
   totalDurationText: string;
   division: string;
   instructors: {
@@ -73,6 +73,7 @@ export interface EpisodeProgress {
 }
 
 export interface EmployeeProfile {
+  employeeId?: string;
   name: string;
   role: string;
   division: string;

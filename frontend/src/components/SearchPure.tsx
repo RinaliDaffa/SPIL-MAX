@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import CardPure from './CardPure';
-import { MODULES } from '@/data/catalog';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 const norm = (s: string) =>
@@ -24,7 +23,7 @@ export default function SearchPure({ onClose }: SearchPureProps) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
-  const { recentSearches } = useLearningStore();
+  const { modules, recentSearches } = useLearningStore();
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -47,7 +46,7 @@ export default function SearchPure({ onClose }: SearchPureProps) {
     const q = norm(query.trim());
     if (!q) return [];
     const tokens = q.split(/\s+/).filter(Boolean);
-    return MODULES.filter((m) => {
+    return modules.filter((m) => {
       const haystack = norm(
         [
           m.title,
@@ -61,7 +60,7 @@ export default function SearchPure({ onClose }: SearchPureProps) {
       );
       return tokens.every((tok) => haystack.includes(tok));
     });
-  }, [query]);
+  }, [query, modules]);
 
   const quickCategories = useMemo(
     () => [
