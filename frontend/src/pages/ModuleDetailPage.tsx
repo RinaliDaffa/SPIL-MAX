@@ -15,9 +15,8 @@ import RowPure from '@/components/RowPure';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
- * SPIL MAX Course / Competency Detail Page — Adapted from NovaStream DetailsPure (MIT).
- * Displays Apple TV+ full-bleed hero, Level filter picker, clean iOS/tvOS vertical
- * episode rows with progress bars & learning takeaways, instructors, and related modules.
+ * SPIL MAX Course / Competency Detail Page (`/modul/:slug`).
+ * Grey metadata line strictly follows: `4 Level Video · 17 Menit · 2026`
  */
 export default function ModuleDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -55,12 +54,12 @@ export default function ModuleDetailPage() {
 
   const watchedSet = new Set(watchedEpisodes);
   const inMyList = myList.includes(module.id);
+  const isMandatory = Boolean(module.mandatoryFromSuperior);
 
   const allCompleted = module.episodes.every((ep) =>
     watchedSet.has(learningStore.keyOf(module.id, ep.id))
   );
 
-  // Determine best resume episode (in-progress, else first unwatched, else Level 1)
   const resumeInfo = (() => {
     for (const ep of module.episodes) {
       const key = learningStore.keyOf(module.id, ep.id);
@@ -88,19 +87,16 @@ export default function ModuleDetailPage() {
       ? module.episodes
       : module.episodes.filter((ep) => String(ep.levelNumber) === levelFilter);
 
-  const relatedModules = modules.filter(
-    (m) => m.id !== module.id && (m.kind === module.kind || m.mandatoryFromSuperior)
-  ).slice(0, 8);
+  const relatedModules = modules
+    .filter((m) => m.id !== module.id && (m.kind === module.kind || m.mandatoryFromSuperior))
+    .slice(0, 8);
 
-  const meta = [
-    module.kind,
-    `${module.episodes.length} Level Video`,
-    module.totalDurationText,
-    module.division,
-    String(module.year),
-  ]
-    .filter(Boolean)
-    .join('  ·  ');
+  // Exact format requested on clicked detail view: "4 Level Video · 17 Menit · 2026"
+  const levelCountLabel =
+    module.kind === 'Learn More' || module.episodes.length === 1
+      ? `${module.episodes.length} Video`
+      : `${module.episodes.length} Level Video`;
+  const meta = `${levelCountLabel}  ·  ${module.totalDurationText}  ·  ${module.year}`;
 
   return (
     <div className="overflow-x-hidden pb-10 md:pb-20">
@@ -129,15 +125,20 @@ export default function ModuleDetailPage() {
           data-tv-focus
           onClick={() => navigate(-1)}
           aria-label="Kembali"
-          className="absolute top-[66px] md:top-[76px] tv:top-[96px] left-4 md:left-8 tv:left-14 z-30 w-9 h-9 tv:w-11 tv:h-11 rounded-full bg-black/50 border border-white/10 backdrop-blur-md flex items-center justify-center text-white/85 hover:text-white active:scale-95 transition-all"
+          className="absolute top-[66px] md:top-[76px] tv:top-[96px] left-4 md:left-8 tv:left-14 z-30 w-9 h-9 tv:w-11 tv:h-11 rounded-full bg-black/55 border border-white/12 backdrop-blur-md flex items-center justify-center text-white/85 hover:text-white active:scale-95 transition-all"
         >
           <ChevronLeft size={19} />
         </button>
 
         <div className="absolute inset-x-0 bottom-0 px-5 md:px-8 tv:px-14 pb-8 md:pb-12 max-w-[1600px] tv:max-w-[2200px] mx-auto">
           <div className="p-in max-w-2xl tv:max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.1] border border-white/15 backdrop-blur-md text-[11px] tv:text-[13px] font-semibold tracking-[0.08em] uppercase text-white/90 mb-3.5">
-              <span>{module.competency}</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/55 border border-white/15 backdrop-blur-md text-[11px] tv:text-[13px] font-semibold tracking-[0.08em] uppercase text-white/92 mb-3.5">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isMandatory ? 'bg-[#d02030]' : 'bg-[#22c55e]'
+                }`}
+              />
+              <span>{module.kind === 'Learn More' ? 'Learn More' : `${module.kind} Competency`}</span>
               {module.badge && (
                 <>
                   <span className="text-white/35">·</span>
@@ -146,15 +147,15 @@ export default function ModuleDetailPage() {
               )}
             </div>
 
-            <h1 className="p-display text-[30px] sm:text-[40px] md:text-[54px] tv:text-[70px] mb-3.5">
+            <h1 className="p-display text-[30px] sm:text-[40px] md:text-[54px] tv:text-[70px] text-white mb-3">
               {module.title}
             </h1>
 
-            <p className="text-[12.5px] md:text-[13.5px] tv:text-[16px] font-medium p-dim mb-4">
+            {/* Grey metadata line shown when clicked: "4 Level Video · 17 Menit · 2026" */}
+            <p className="text-[13px] md:text-[14.5px] tv:text-[17px] font-medium p-dim mb-4">
               {meta}
             </p>
 
-            {/* Summary truncated to 3 lines with accessible "selengkapnya" trigger outside clamp */}
             <div className="max-w-xl tv:max-w-3xl mb-6">
               <p
                 onClick={() => setSynopsisOpen(true)}
@@ -165,7 +166,7 @@ export default function ModuleDetailPage() {
               <button
                 type="button"
                 onClick={() => setSynopsisOpen(true)}
-                className="mt-1 text-[13px] tv:text-[15px] font-medium text-white/55 hover:text-white transition-colors"
+                className="mt-1 text-[13px] tv:text-[15px] font-medium text-[#4ade80]/85 hover:text-[#4ade80] transition-colors"
               >
                 Selengkapnya &amp; Capaian Kompetensi ›
               </button>
@@ -185,13 +186,17 @@ export default function ModuleDetailPage() {
                   <Play size={16} fill="currentColor" />
                 )}
                 <span>
-                  {resumeInfo.isResume
-                    ? `Lanjutkan Level ${resumeInfo.episode.levelNumber}`
-                    : `Putar Level ${resumeInfo.episode.levelNumber}`}
+                  {module.episodes.length === 1
+                    ? resumeInfo.isResume
+                      ? 'Lanjutkan Video'
+                      : 'Putar Video'
+                    : resumeInfo.isResume
+                      ? `Lanjutkan Level ${resumeInfo.episode.levelNumber}`
+                      : `Putar Level ${resumeInfo.episode.levelNumber}`}
                 </span>
                 {resumeInfo.isResume && (
                   <span
-                    className="absolute bottom-0 left-0 h-[3px] bg-black/35"
+                    className="absolute bottom-0 left-0 h-[3px] bg-white/45"
                     style={{ width: `${Math.min(resumeInfo.pct, 100)}%` }}
                   />
                 )}
@@ -202,7 +207,7 @@ export default function ModuleDetailPage() {
                 data-tv-focus
                 onClick={() => learningStore.toggleMyList(module.id)}
                 aria-label={inMyList ? 'Hapus dari Daftar Saya' : 'Tambah ke Daftar Saya'}
-                className={`p-btn p-btn-ghost ${inMyList ? '!bg-white/25' : ''}`}
+                className={`p-btn p-btn-ghost ${inMyList ? '!bg-white/22' : ''}`}
               >
                 {inMyList ? <Check size={16} strokeWidth={2.6} /> : <Plus size={17} strokeWidth={2.4} />}
                 <span>{inMyList ? 'Tersimpan di Daftar Saya' : 'Daftar Saya'}</span>
@@ -235,13 +240,11 @@ export default function ModuleDetailPage() {
         className="max-w-[1080px] tv:max-w-[1440px] mx-auto px-5 md:px-8 tv:px-14 pt-10 md:pt-14"
       >
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div>
-            <h2 className="p-title text-[20px] md:text-[24px] tv:text-[30px]">
-              Kurikulum Level Video
+          <div className="inline-flex items-center gap-2.5">
+            <span className="spil-bar-green" />
+            <h2 className="p-title text-[20px] md:text-[24px] tv:text-[30px] text-white">
+              {module.episodes.length === 1 ? 'Materi Video' : 'Kurikulum Level Video'}
             </h2>
-            <p className="text-[12.5px] tv:text-[14.5px] p-faint mt-0.5">
-              Klik salah satu level untuk memutar dengan subtitle &amp; transkrip interaktif
-            </p>
           </div>
 
           {module.episodes.length > 1 && (
@@ -293,8 +296,8 @@ export default function ModuleDetailPage() {
                     </span>
                   </span>
                   {!isWatched && pct > 0 && (
-                    <span className="absolute bottom-0 inset-x-0 h-[3px] bg-white/25">
-                      <span className="block h-full bg-white" style={{ width: `${pct}%` }} />
+                    <span className="absolute bottom-0 inset-x-0 h-[3px] bg-white/20">
+                      <span className="block h-full spil-progress-fill" style={{ width: `${pct}%` }} />
                     </span>
                   )}
                 </div>
@@ -302,18 +305,20 @@ export default function ModuleDetailPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-[15px] md:text-[16px] tv:text-[19px] font-semibold text-white truncate">
-                      Level {ep.levelNumber} — {ep.title}
+                      {module.episodes.length === 1
+                        ? ep.title
+                        : `Level ${ep.levelNumber} · ${ep.title}`}
                     </p>
                     {isWatched && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/12 text-[10.5px] font-semibold text-white/85 shrink-0">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#16a34a]/20 border border-[#22c55e]/30 text-[10.5px] font-semibold text-[#4ade80] shrink-0">
                         <Check size={11} strokeWidth={3} /> Selesai
                       </span>
                     )}
                   </div>
-                  <p className="text-[12px] tv:text-[14px] p-faint mt-0.5">
-                    {ep.durationText}  ·  Subtitle ID / EN  ·  4 Bab Materi
+                  <p className="text-[12px] tv:text-[14px] p-dim mt-0.5">
+                    {ep.durationText}  ·  {module.year}
                   </p>
-                  <p className="text-[13px] md:text-[13.5px] tv:text-[15.5px] p-dim leading-relaxed line-clamp-2 mt-1.5">
+                  <p className="text-[13px] md:text-[13.5px] tv:text-[15.5px] text-white/70 leading-relaxed line-clamp-2 mt-1.5">
                     {ep.description}
                   </p>
                 </div>
@@ -329,7 +334,7 @@ export default function ModuleDetailPage() {
             <ul className="space-y-2 text-[13.5px] tv:text-[15.5px] text-white/80">
               {module.objectives.map((obj, idx) => (
                 <li key={idx} className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/60 mt-2 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] mt-2 shrink-0" />
                   <span>{obj}</span>
                 </li>
               ))}
@@ -341,7 +346,7 @@ export default function ModuleDetailPage() {
             <div className="space-y-3">
               {module.instructors.map((inst, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <span className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-[13px] font-semibold text-white/85 shrink-0">
+                  <span className="w-9 h-9 rounded-full bg-gradient-to-br from-[#d02030]/80 to-[#991b1b]/80 flex items-center justify-center text-[13px] font-semibold text-white shrink-0">
                     {inst.name.charAt(0)}
                   </span>
                   <div className="min-w-0">
@@ -362,6 +367,7 @@ export default function ModuleDetailPage() {
         <div className="pt-12 md:pt-16 max-w-[1600px] tv:max-w-[2200px] mx-auto">
           <RowPure
             title="Modul Terkait Selanjutnya"
+            accent="green"
             items={relatedModules}
             variant="wide"
             seeAll={false}

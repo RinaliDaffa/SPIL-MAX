@@ -133,30 +133,68 @@ export function ensureEmployee(emp: EmployeeContext) {
 
 export function seedInitialCatalogIfEmpty() {
   ensureEmployee(DEFAULT_EMPLOYEE);
-  const row = db.prepare('SELECT COUNT(*) as cnt FROM modules').get() as { cnt: number };
-  if (row.cnt > 0) return;
+  const existingRow = db.prepare('SELECT COUNT(*) as cnt FROM modules').get() as { cnt: number };
+  const wasEmpty = existingRow.cnt === 0;
+
+  // Clean up retired external demo IDs & migrate any legacy kind labels idempotently
+  db.prepare(`DELETE FROM modules WHERE id IN ('green-maritime-ext', 'ai-supply-chain-ext')`).run();
+  db.prepare(`UPDATE modules SET kind = 'Technical' WHERE kind = 'Operasional & K3'`).run();
 
   const now = Date.now();
-  const insertMod = db.prepare(`
+  const upsertMod = db.prepare(`
     INSERT INTO modules (
       id, slug, title, competency, kind, year, badge, mandatory_from_superior,
       top_rank, featured_in_hero, hero_tagline, summary, objectives_json,
       poster, backdrop, total_duration_text, division, instructors_json,
       sort_order, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      slug = excluded.slug,
+      title = excluded.title,
+      competency = excluded.competency,
+      kind = excluded.kind,
+      year = excluded.year,
+      badge = excluded.badge,
+      mandatory_from_superior = excluded.mandatory_from_superior,
+      top_rank = excluded.top_rank,
+      featured_in_hero = excluded.featured_in_hero,
+      hero_tagline = excluded.hero_tagline,
+      summary = excluded.summary,
+      objectives_json = excluded.objectives_json,
+      poster = excluded.poster,
+      backdrop = excluded.backdrop,
+      total_duration_text = excluded.total_duration_text,
+      division = excluded.division,
+      instructors_json = excluded.instructors_json,
+      sort_order = excluded.sort_order,
+      updated_at = excluded.updated_at
   `);
 
-  const insertEp = db.prepare(`
+  const upsertEp = db.prepare(`
     INSERT INTO episodes (
       id, module_id, level_number, level_label, title, description,
       duration_seconds, duration_text, still, renditions_json, captions_json,
       chapters_vtt, intro_end_seconds, credits_start_seconds, key_takeaways_json,
       created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      module_id = excluded.module_id,
+      level_number = excluded.level_number,
+      level_label = excluded.level_label,
+      title = excluded.title,
+      description = excluded.description,
+      duration_text = excluded.duration_text,
+      still = excluded.still,
+      captions_json = excluded.captions_json,
+      chapters_vtt = excluded.chapters_vtt,
+      intro_end_seconds = excluded.intro_end_seconds,
+      credits_start_seconds = excluded.credits_start_seconds,
+      key_takeaways_json = excluded.key_takeaways_json,
+      updated_at = excluded.updated_at
   `);
 
   SEED_MODULES.forEach((mod, idx) => {
-    insertMod.run(
+    upsertMod.run(
       mod.id,
       mod.slug,
       mod.title,
@@ -181,7 +219,7 @@ export function seedInitialCatalogIfEmpty() {
     );
 
     for (const ep of mod.episodes) {
-      insertEp.run(
+      upsertEp.run(
         ep.id,
         mod.id,
         ep.levelNumber,
@@ -203,7 +241,9 @@ export function seedInitialCatalogIfEmpty() {
     }
   });
 
-  seedDemoEmployeeState(DEFAULT_EMPLOYEE.employeeId);
+  if (wasEmpty) {
+    seedDemoEmployeeState(DEFAULT_EMPLOYEE.employeeId);
+  }
 }
 
 export function seedDemoEmployeeState(employeeId: string) {

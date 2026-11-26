@@ -164,7 +164,7 @@ app.post('/api/modules', (req: Request, res: Response) => {
     JSON.stringify(objectives),
     poster,
     backdrop,
-    String(body.totalDurationText || '12 mnt'),
+    String(body.totalDurationText || '17 Menit'),
     division,
     JSON.stringify(instructors),
     0, // appear prominently

@@ -1,9 +1,8 @@
 export type CompetencyKind =
   | 'Core'
+  | 'Technical'
   | 'Managerial'
-  | 'Operasional & K3'
-  | 'Spesial'
-  | 'Eksternal';
+  | 'Learn More';
 
 export interface RenditionSource {
   src: string;

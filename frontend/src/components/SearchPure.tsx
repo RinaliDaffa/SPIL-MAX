@@ -65,12 +65,12 @@ export default function SearchPure({ onClose }: SearchPureProps) {
   const quickCategories = useMemo(
     () => [
       'Core',
-      'Operasional & K3',
+      'Technical',
       'Managerial',
-      'Eksternal',
+      'Pak Faris',
       'Port Management',
       'Safety K3',
-      'Leadership',
+      'Sizing Up People',
       'LARA',
     ],
     []

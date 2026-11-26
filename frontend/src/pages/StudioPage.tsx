@@ -66,7 +66,7 @@ export default function StudioPage() {
   const [epLevelNumber, setEpLevelNumber] = useState(1);
   const [epLevelLabel, setEpLevelLabel] = useState('Level 1 · Dasar');
   const [epTitle, setEpTitle] = useState('');
-  const [epDurationText, setEpDurationText] = useState('12 mnt');
+  const [epDurationText, setEpDurationText] = useState('17 Menit');
   const [epDescription, setEpDescription] = useState('');
   const [epVideoUrl, setEpVideoUrl] = useState('/media/spil-demo-720.mp4');
   const [epSubtitleUrl, setEpSubtitleUrl] = useState('/vtt/core.id.vtt');
@@ -489,7 +489,7 @@ export default function StudioPage() {
                 onChange={(e) => setModKind(e.target.value as CompetencyKind)}
                 className={inputCls}
               >
-                {(['Core', 'Managerial', 'Operasional & K3', 'Spesial', 'Eksternal'] as CompetencyKind[]).map(
+                {(['Core', 'Technical', 'Managerial', 'Learn More'] as CompetencyKind[]).map(
                   (k) => (
                     <option key={k} value={k} className="bg-[#141416] text-white">
                       {k}

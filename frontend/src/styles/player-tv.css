@@ -12,6 +12,11 @@
   border-radius: 0;
 }
 
+/* Subtle SPIL Emerald timeline playback fill inside Apple TV Liquid Glass player */
+.rv-root [data-part="timeline-fill"] {
+  background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+}
+
 .spil-player-card .rv-root {
   border-radius: 20px;
   box-shadow:

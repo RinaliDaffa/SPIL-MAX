@@ -1,23 +1,30 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import FilterBar, { EMPTY_FILTERS, type CatalogFilters } from '@/components/FilterBar';
 import GridPure from '@/components/GridPure';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 interface CatalogPageProps {
-  mode: 'all' | 'mandatory' | 'external';
+  mode: 'all' | 'core' | 'technical' | 'managerial' | 'mandatory';
 }
 
 /**
- * SPIL MAX Filterable Catalog Page (`/kompetensi`, `/wajib`, `/eksternal`).
+ * SPIL MAX Filterable Catalog Page (`/core`, `/technical`, `/managerial`, `/wajib`, `/kompetensi`).
+ * Clean White Page Title without grey subtitle clutter underneath.
  */
 export default function CatalogPage({ mode }: CatalogPageProps) {
   const [filters, setFilters] = useState<CatalogFilters>(EMPTY_FILTERS);
   const { modules, watchedEpisodes } = useLearningStore();
 
+  useEffect(() => {
+    setFilters(EMPTY_FILTERS);
+  }, [mode]);
+
   const baseModules = useMemo(() => {
+    if (mode === 'core') return modules.filter((m) => m.kind === 'Core');
+    if (mode === 'technical') return modules.filter((m) => m.kind === 'Technical');
+    if (mode === 'managerial') return modules.filter((m) => m.kind === 'Managerial');
     if (mode === 'mandatory') return modules.filter((m) => m.mandatoryFromSuperior);
-    if (mode === 'external') return modules.filter((m) => m.kind === 'Eksternal');
-    return modules;
+    return modules.filter((m) => m.kind !== 'Learn More');
   }, [mode, modules]);
 
   const { watchedModuleIds, moduleProgressMap } = useMemo(() => {
@@ -63,36 +70,28 @@ export default function CatalogPage({ mode }: CatalogPageProps) {
   }, [baseModules, filters, watchedModuleIds]);
 
   const headerCopy = {
-    all: {
-      eyebrow: 'KAMUS KOMPETENSI SPIL',
-      title: 'Katalog Kompetensi & Modul',
-      desc: 'Seluruh modul pembelajaran video berjenjang (Level 1–4) untuk Core, Managerial, dan Operasional SPIL.',
-    },
-    mandatory: {
-      eyebrow: 'INISIATIF LARA & PENUGASAN ATASAN',
-      title: 'Modul Wajib & Dari Atasan',
-      desc: 'Daftar modul prioritas yang ditugaskan langsung oleh atasan maupun standar wajib keselamatan & administrasi.',
-    },
-    external: {
-      eyebrow: 'SPIL MAX · EDU STREAM Q2',
-      title: 'Kurasi Pembelajaran Eksternal',
-      desc: 'Sumber belajar eksternal pilihan seputar keberlanjutan maritim global, analitik data, dan kecerdasan buatan.',
-    },
+    all: { title: 'Semua Kompetensi', accent: 'green' as const },
+    core: { title: 'Core Competency', accent: 'green' as const },
+    technical: { title: 'Technical Competency', accent: 'green' as const },
+    managerial: { title: 'Managerial Competency', accent: 'green' as const },
+    mandatory: { title: 'Modul Wajib', accent: 'red' as const },
   }[mode];
 
   return (
     <div className="min-h-screen pt-20 md:pt-24 tv:pt-32 pb-14 max-w-[1600px] tv:max-w-[2200px] mx-auto">
       <div className="px-5 md:px-8 tv:px-14 mb-6">
-        <p className="p-label mb-2">{headerCopy.eyebrow}</p>
-        <div className="flex flex-wrap items-baseline gap-3">
-          <h1 className="p-display text-[28px] sm:text-[34px] md:text-[42px] tv:text-[54px]">
+        <div className="inline-flex items-center gap-3">
+          <span
+            className={
+              headerCopy.accent === 'red'
+                ? 'spil-bar-red !h-7'
+                : 'spil-bar-green !h-7'
+            }
+          />
+          <h1 className="p-display text-[28px] sm:text-[34px] md:text-[42px] tv:text-[54px] text-white">
             {headerCopy.title}
           </h1>
-          <span className="text-[13px] tv:text-[16px] p-faint">{filtered.length} modul</span>
         </div>
-        <p className="text-[13.5px] md:text-[15px] tv:text-[17px] p-dim max-w-2xl mt-2">
-          {headerCopy.desc}
-        </p>
       </div>
 
       {mode === 'all' && (
@@ -110,7 +109,7 @@ export default function CatalogPage({ mode }: CatalogPageProps) {
         {filtered.length > 0 ? (
           <GridPure
             items={filtered}
-            variant={mode === 'external' ? 'wide' : 'poster'}
+            variant={mode === 'technical' || mode === 'mandatory' ? 'wide' : 'poster'}
             watchedModuleIds={watchedModuleIds}
             moduleProgressMap={moduleProgressMap}
           />

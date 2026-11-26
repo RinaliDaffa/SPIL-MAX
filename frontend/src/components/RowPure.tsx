@@ -14,9 +14,10 @@ export const slugify = (s: string) =>
 
 interface RowPureProps {
   title: string;
-  subtitle?: string;
   items: LearningModule[];
   variant?: 'poster' | 'wide';
+  accent?: 'green' | 'red';
+  seeAllPath?: string;
   watchedModuleIds?: Set<string>;
   moduleProgressMap?: Record<string, number>;
   showTitles?: boolean;
@@ -25,14 +26,15 @@ interface RowPureProps {
 }
 
 /**
- * Apple TV+ Horizontal Masked Rail — Adapted from NovaStream RowPure (MIT).
- * Arrow buttons always align cleanly to card boundaries on the page margin.
+ * Apple TV+ Horizontal Masked Rail — Clean White Section Heading Only
+ * (No grey subtitle underneath) + Subtle SPIL Jewel Accent Bar.
  */
 export default function RowPure({
   title,
-  subtitle,
   items = [],
   variant = 'poster',
+  accent = 'green',
+  seeAllPath,
   watchedModuleIds,
   moduleProgressMap,
   showTitles = true,
@@ -65,8 +67,13 @@ export default function RowPure({
     el.scrollTo({ left: Math.max(0, targetCard.offsetLeft - marge), behavior: 'smooth' });
   };
 
-  const openCollection = () =>
-    navigate(`/koleksi/${slugify(title)}`, { state: { title, subtitle, itemIds: items.map((i) => i.id) } });
+  const openCollection = () => {
+    if (seeAllPath) {
+      navigate(seeAllPath);
+    } else {
+      navigate(`/koleksi/${slugify(title)}`, { state: { title, itemIds: items.map((i) => i.id) } });
+    }
+  };
 
   return (
     <section data-row className="group/row relative mb-10 md:mb-14 tv:mb-16">
@@ -76,18 +83,19 @@ export default function RowPure({
             type="button"
             data-tv-focus
             onClick={openCollection}
-            className="group/h inline-flex items-baseline gap-2 text-left"
+            className="group/h inline-flex items-center gap-2.5 text-left"
           >
-            <h2 className="p-title text-[18px] md:text-[22px] tv:text-[28px]">{title}</h2>
-            <span className="text-[13px] tv:text-[15px] text-white/35 md:text-white/0 group-hover/h:text-white/60 transition-colors">
+            <span className={accent === 'red' ? 'spil-bar-red' : 'spil-bar-green'} />
+            <h2 className="p-title text-[18px] md:text-[22px] tv:text-[28px] text-white">{title}</h2>
+            <span className="text-[13px] tv:text-[15px] text-white/35 md:text-white/0 group-hover/h:text-white/65 transition-colors">
               Lihat Semua ›
             </span>
           </button>
         ) : (
-          <h2 className="p-title text-[18px] md:text-[22px] tv:text-[28px]">{title}</h2>
-        )}
-        {subtitle && (
-          <p className="text-[12px] md:text-[13px] tv:text-[15px] p-faint mt-1">{subtitle}</p>
+          <div className="inline-flex items-center gap-2.5">
+            <span className={accent === 'red' ? 'spil-bar-red' : 'spil-bar-green'} />
+            <h2 className="p-title text-[18px] md:text-[22px] tv:text-[28px] text-white">{title}</h2>
+          </div>
         )}
       </div>
 

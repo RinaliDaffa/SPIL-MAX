@@ -5,6 +5,7 @@ import CardKeyNav from '@/components/CardKeyNav';
 import HomePage from '@/pages/HomePage';
 
 const CatalogPage = React.lazy(() => import('@/pages/CatalogPage'));
+const LearnMorePage = React.lazy(() => import('@/pages/LearnMorePage'));
 const ModuleDetailPage = React.lazy(() => import('@/pages/ModuleDetailPage'));
 const WatchPage = React.lazy(() => import('@/pages/WatchPage'));
 const MyListPage = React.lazy(() => import('@/pages/MyListPage'));
@@ -23,7 +24,7 @@ function ScrollToTop() {
 function RouteLoader() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center">
-      <div className="w-7 h-7 border-2 border-white/15 border-t-white/75 rounded-full animate-spin" />
+      <div className="w-7 h-7 border-2 border-white/15 border-t-[#22c55e] rounded-full animate-spin" />
     </div>
   );
 }
@@ -42,10 +43,13 @@ function AppShell() {
         <Suspense fallback={<RouteLoader />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/kompetensi" element={<CatalogPage mode="all" />} />
-            <Route path="/wajib" element={<CatalogPage mode="mandatory" />} />
-            <Route path="/eksternal" element={<CatalogPage mode="external" />} />
+            <Route path="/core" element={<CatalogPage mode="core" />} />
+            <Route path="/technical" element={<CatalogPage mode="technical" />} />
+            <Route path="/managerial" element={<CatalogPage mode="managerial" />} />
             <Route path="/daftar-saya" element={<MyListPage />} />
+            <Route path="/learn-more" element={<LearnMorePage />} />
+            <Route path="/wajib" element={<CatalogPage mode="mandatory" />} />
+            <Route path="/kompetensi" element={<CatalogPage mode="all" />} />
             <Route path="/riwayat" element={<HistoryPage />} />
             <Route path="/studio" element={<StudioPage />} />
             <Route path="/koleksi/:slug" element={<CollectionPage />} />

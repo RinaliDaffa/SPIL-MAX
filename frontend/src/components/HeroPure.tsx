@@ -12,9 +12,8 @@ interface HeroPureProps {
 }
 
 /**
- * Apple TV+ Full-Bleed Showcase Hero — Adapted from NovaStream HeroPure (MIT).
- * Crossfade artwork, horizontal touch-swipe on mobile/tablet, animated 5.5s
- * progress bars, primary white pill CTA, frosted secondary CTA, and My List toggle.
+ * Apple TV+ Full-Bleed Showcase Hero — Clean White Display Title,
+ * Subtle SPIL Emerald/Crimson Micro-Accents, Zero Grey Subtitle Clutter.
  */
 export default function HeroPure({ modules = [] }: HeroPureProps) {
   const navigate = useNavigate();
@@ -57,21 +56,12 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
   const current = modules[index % modules.length];
   const inMyList = myList.includes(current.id);
 
-  // Find active resume episode if user already started this module
   const resumeEpisode = current.episodes.find((ep) => {
     const p = progress[learningStore.keyOf(current.id, ep.id)];
     return p && p.currentTime > 1 && p.currentTime / p.duration < 0.9;
   });
   const targetEpisode = resumeEpisode || current.episodes[0];
-
-  const meta = [
-    current.kind,
-    current.episodes.length > 1 ? `${current.episodes.length} Level` : 'Modul Spesial',
-    current.totalDurationText,
-    current.division,
-  ]
-    .filter(Boolean)
-    .join('  ·  ');
+  const isMandatory = Boolean(current.mandatoryFromSuperior);
 
   return (
     <section
@@ -83,7 +73,7 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       style={{ touchAction: 'pan-y' }}
-      className="relative w-full h-[80vh] sm:h-[84vh] md:h-[90vh] tv:h-[92vh] overflow-hidden cursor-pointer select-none"
+      className="relative w-full h-[78vh] sm:h-[82vh] md:h-[88vh] tv:h-[90vh] overflow-hidden cursor-pointer select-none"
     >
       <AnimatePresence>
         <motion.div
@@ -106,12 +96,12 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Pure Apple TV+ vignette fade to pure black */}
+      {/* Pure Apple TV+ vignette fade to pure #000000 black */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'linear-gradient(to top, #000000 0%, rgba(0,0,0,0.88) 22%, rgba(0,0,0,0.22) 62%, rgba(0,0,0,0.42) 100%)',
+            'linear-gradient(to top, #000000 0%, rgba(0,0,0,0.88) 22%, rgba(0,0,0,0.2) 62%, rgba(0,0,0,0.42) 100%)',
         }}
       />
 
@@ -125,8 +115,13 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
             transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
             className="flex flex-col items-center max-w-2xl tv:max-w-4xl"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.1] border border-white/15 backdrop-blur-md text-[11px] tv:text-[13px] font-semibold tracking-[0.09em] uppercase text-white/90 mb-3.5">
-              <span>SPIL MAX</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/55 border border-white/15 backdrop-blur-md text-[11px] tv:text-[13px] font-semibold tracking-[0.09em] uppercase text-white/92 mb-4">
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isMandatory ? 'bg-[#d02030]' : 'bg-[#22c55e]'
+                }`}
+              />
+              <span>{current.kind} Competency</span>
               {current.badge && (
                 <>
                   <span className="text-white/35">·</span>
@@ -135,21 +130,11 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
               )}
             </div>
 
-            <h1 className="p-display text-[32px] sm:text-[42px] md:text-[58px] tv:text-[76px] mb-3.5 md:mb-4">
+            <h1 className="p-display text-[32px] sm:text-[42px] md:text-[56px] tv:text-[74px] text-white mb-6">
               {current.title}
             </h1>
 
-            <p className="text-[12px] sm:text-[13px] tv:text-[16px] font-medium tracking-[0.01em] p-dim mb-3">
-              {meta}
-            </p>
-
-            {current.heroTagline && (
-              <p className="hidden sm:block text-[14px] md:text-[15.5px] tv:text-[19px] text-white/75 max-w-xl tv:max-w-2xl leading-relaxed mb-6 line-clamp-2">
-                {current.heroTagline}
-              </p>
-            )}
-
-            <div className="flex flex-wrap items-center justify-center gap-2.5 md:gap-3 mt-2 sm:mt-0">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 md:gap-3">
               <button
                 type="button"
                 data-tv-focus
@@ -185,7 +170,7 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
                 }}
                 aria-label={inMyList ? 'Hapus dari Daftar Saya' : 'Tambah ke Daftar Saya'}
                 title={inMyList ? 'Tersimpan di Daftar Saya' : 'Tambah ke Daftar Saya'}
-                className={`p-icon-btn ${inMyList ? '!bg-white !text-black' : ''}`}
+                className={`p-icon-btn ${inMyList ? '!bg-[#16a34a] !border-[#22c55e]/40 !text-white' : ''}`}
               >
                 {inMyList ? <Check size={18} strokeWidth={2.6} /> : <Plus size={19} strokeWidth={2.4} />}
               </button>
@@ -209,19 +194,19 @@ export default function HeroPure({ modules = [] }: HeroPureProps) {
                 }}
                 aria-label={`Slide ${k + 1}: ${m.title}`}
                 className={`relative h-[3px] tv:h-[4px] rounded-full overflow-hidden transition-all duration-500 ${
-                  active ? 'w-7 tv:w-9 bg-white/30' : 'w-[5px] tv:w-[6px] bg-white/35 hover:bg-white/65'
+                  active ? 'w-7 tv:w-9 bg-white/25' : 'w-[5px] tv:w-[6px] bg-white/35 hover:bg-white/65'
                 }`}
               >
                 {active && !paused && (
                   <motion.span
                     key={`progress-${index}`}
-                    className="absolute inset-y-0 left-0 bg-white rounded-full"
+                    className="absolute inset-y-0 left-0 bg-[#22c55e] rounded-full"
                     initial={{ width: '0%' }}
                     animate={{ width: '100%' }}
                     transition={{ duration: SLIDE_DURATION / 1000, ease: 'linear' }}
                   />
                 )}
-                {active && paused && <span className="absolute inset-0 bg-white rounded-full" />}
+                {active && paused && <span className="absolute inset-0 bg-[#22c55e] rounded-full" />}
               </button>
             );
           })}

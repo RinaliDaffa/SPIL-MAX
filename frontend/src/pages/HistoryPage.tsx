@@ -55,14 +55,11 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-screen px-5 md:px-8 tv:px-14 pt-20 md:pt-24 tv:pt-32 pb-14 max-w-[1100px] tv:max-w-[1500px] mx-auto">
-      <div className="mb-6">
-        <p className="p-label mb-2">REKAM JEJAK LARA</p>
-        <div className="flex items-baseline gap-3">
-          <h1 className="p-display text-[28px] md:text-[40px] tv:text-[52px]">
-            Riwayat Pembelajaran
-          </h1>
-          <span className="text-[13px] tv:text-[16px] p-faint">{entries.length} video</span>
-        </div>
+      <div className="inline-flex items-center gap-3 mb-6">
+        <span className="spil-bar-green !h-7" />
+        <h1 className="p-display text-[28px] md:text-[40px] tv:text-[52px] text-white">
+          Riwayat Pembelajaran
+        </h1>
       </div>
 
       {entries.length > 0 ? (
@@ -80,8 +77,8 @@ export default function HistoryPage() {
                 <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/h:opacity-100 transition-opacity bg-black/30">
                   <Play size={16} fill="white" />
                 </span>
-                <span className="absolute bottom-0 inset-x-0 h-[3px] bg-white/25">
-                  <span className="block h-full bg-white" style={{ width: `${item.pct}%` }} />
+                <span className="absolute bottom-0 inset-x-0 h-[3px] bg-white/20">
+                  <span className="block h-full spil-progress-fill" style={{ width: `${item.pct}%` }} />
                 </span>
               </div>
 

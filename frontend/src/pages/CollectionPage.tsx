@@ -6,7 +6,6 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
 
 interface CollectionState {
   title?: string;
-  subtitle?: string;
   itemIds?: string[];
 }
 
@@ -53,10 +52,7 @@ export default function CollectionPage() {
         >
           <ChevronLeft size={20} />
         </button>
-        <div>
-          <h1 className="p-display text-[26px] md:text-[38px] tv:text-[48px]">{title}</h1>
-          {state?.subtitle && <p className="text-[13px] tv:text-[15px] p-faint mt-1">{state.subtitle}</p>}
-        </div>
+        <h1 className="p-display text-[26px] md:text-[38px] tv:text-[48px] text-white">{title}</h1>
       </div>
 
       <GridPure items={items} watchedModuleIds={watchedModuleIds} />
