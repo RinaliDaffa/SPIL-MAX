@@ -107,10 +107,10 @@ db.exec(`
 
 export const DEFAULT_EMPLOYEE: EmployeeContext = {
   employeeId: 'SPIL-EMP-001',
-  name: 'Tri Dewi Rasnani',
-  role: 'Operations & People Development',
-  division: 'Fleet & Terminal Operations',
-  location: 'Surabaya · Tanjung Perak',
+  name: 'Jason Duval',
+  role: 'Human Capital Corporate Affairs',
+  division: 'Human Capital Corporate Affairs',
+  location: 'Surabaya · Kantor Pusat',
   annualTargetHours: 150,
   baseCompletedHours: 120,
 };
@@ -119,7 +119,11 @@ export function ensureEmployee(emp: EmployeeContext) {
   db.prepare(`
     INSERT INTO employees (employee_id, name, role, division, location, annual_target_hours, base_completed_hours)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT(employee_id) DO NOTHING
+    ON CONFLICT(employee_id) DO UPDATE SET
+      name = excluded.name,
+      role = excluded.role,
+      division = excluded.division,
+      location = excluded.location
   `).run(
     emp.employeeId,
     emp.name,

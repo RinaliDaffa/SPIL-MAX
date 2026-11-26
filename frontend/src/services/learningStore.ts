@@ -15,10 +15,10 @@ const RECENT_SEARCH_KEY = 'spil_max_recent_search_v2';
 
 export const DEFAULT_EMPLOYEE: EmployeeProfile = {
   employeeId: 'SPIL-EMP-001',
-  name: 'Tri Dewi Rasnani',
-  role: 'Operations & People Development',
-  division: 'Fleet & Terminal Operations',
-  location: 'Surabaya · Tanjung Perak',
+  name: 'Jason Duval',
+  role: 'Human Capital Corporate Affairs',
+  division: 'Human Capital Corporate Affairs',
+  location: 'Surabaya · Kantor Pusat',
   annualTargetHours: 150,
   baseCompletedHours: 120,
 };

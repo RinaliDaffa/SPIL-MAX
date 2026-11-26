@@ -80,7 +80,7 @@ Backend membaca identitas karyawan pada setiap request melalui HTTP Header yang 
 | `X-Employee-Division` | `Port & Terminal Operations` | Nama divisi / cabang karyawan. |
 
 > [!NOTE]
-> Apabila header di atas belum disuntikkan (seperti pada lingkungan *staging* atau *demo*), sistem otomatis menggunakan akun demo `SPIL-EMP-001` (*Tri Dewi Rasnani*).
+> Apabila header di atas belum disuntikkan (seperti pada lingkungan *staging* atau *demo*), sistem otomatis menggunakan akun demo `SPIL-EMP-001` (*Jason Duval*).
 
 ---
 

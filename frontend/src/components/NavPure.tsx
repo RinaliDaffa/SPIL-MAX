@@ -10,7 +10,6 @@ import {
   Bookmark,
   Sparkles,
   Clock,
-  Tv,
   RotateCcw,
   CheckCircle2,
 } from 'lucide-react';
@@ -339,15 +338,6 @@ export default function NavPure() {
                 >
                   Semua Materi Pembelajaran
                 </MenuRow>
-
-                <div className="my-1.5 mx-3.5 border-t border-white/[0.08]" />
-
-                <div className="px-3.5 py-2 flex items-start gap-2.5 text-[11.5px] text-white/50">
-                  <Tv size={15} className="shrink-0 mt-0.5 text-[#4ade80]" />
-                  <span>
-                    Navigasi Smart TV aktif: gunakan tombol panah remote/keyboard &amp; Enter untuk berpindah kartu.
-                  </span>
-                </div>
 
                 <div className="my-1 mx-3.5 border-t border-white/[0.08]" />
 

@@ -168,7 +168,7 @@ export default function ModuleDetailPage() {
                 onClick={() => setSynopsisOpen(true)}
                 className="mt-1 text-[13px] tv:text-[15px] font-medium text-[#4ade80]/85 hover:text-[#4ade80] transition-colors"
               >
-                Selengkapnya &amp; Capaian Kompetensi ›
+                Selengkapnya ›
               </button>
             </div>
 
@@ -331,40 +331,6 @@ export default function ModuleDetailPage() {
               </button>
             );
           })}
-        </div>
-
-        {/* ── Learning Objectives & Curators Card ── */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2 p-5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-            <p className="p-label mb-3">Capaian Pembelajaran Kompetensi</p>
-            <ul className="space-y-2 text-[13.5px] tv:text-[15.5px] text-white/80">
-              {module.objectives.map((obj, idx) => (
-                <li key={idx} className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] mt-2 shrink-0" />
-                  <span>{obj}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-            <p className="p-label mb-3">Kurator &amp; Divisi Pengampu</p>
-            <div className="space-y-3">
-              {module.instructors.map((inst, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="w-9 h-9 rounded-full bg-gradient-to-br from-[#d02030]/80 to-[#991b1b]/80 flex items-center justify-center text-[13px] font-semibold text-white shrink-0">
-                    {inst.name.charAt(0)}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[13.5px] tv:text-[15px] font-medium text-white truncate">
-                      {inst.name}
-                    </p>
-                    <p className="text-[11.5px] tv:text-[13px] p-faint truncate">{inst.role}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
