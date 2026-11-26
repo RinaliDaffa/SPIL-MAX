@@ -61,3 +61,6 @@ GEMINI.md
 .env
 .env.*
 !.env.example
+
+# Algof Personal .gitignore
+docs/SELF_HOSTED_DEPLOY.md

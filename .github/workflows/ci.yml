@@ -8,10 +8,13 @@ on:
 
 jobs:
   build-and-typecheck:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Preserve untracked .env in the shared self-hosted runner workspace.
+          clean: false
 
       - name: Setup Node.js 22 LTS
         uses: actions/setup-node@v4
