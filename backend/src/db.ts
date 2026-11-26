@@ -138,6 +138,7 @@ export function seedInitialCatalogIfEmpty() {
 
   // Clean up retired external demo IDs & migrate any legacy kind labels idempotently
   db.prepare(`DELETE FROM modules WHERE id IN ('green-maritime-ext', 'ai-supply-chain-ext')`).run();
+  db.prepare(`DELETE FROM episodes WHERE id = 'pak-faris-intro'`).run();
   db.prepare(`UPDATE modules SET kind = 'Technical' WHERE kind = 'Operasional & K3'`).run();
 
   const now = Date.now();

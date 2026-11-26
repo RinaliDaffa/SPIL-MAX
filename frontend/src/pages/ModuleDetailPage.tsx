@@ -243,7 +243,11 @@ export default function ModuleDetailPage() {
           <div className="inline-flex items-center gap-2.5">
             <span className="spil-bar-green" />
             <h2 className="p-title text-[20px] md:text-[24px] tv:text-[30px] text-white">
-              {module.episodes.length === 1 ? 'Materi Video' : 'Kurikulum Level Video'}
+              {module.kind === 'Learn More'
+                ? 'Daftar Koleksi Video'
+                : module.episodes.length === 1
+                  ? 'Materi Video'
+                  : 'Kurikulum Level Video'}
             </h2>
           </div>
 
@@ -305,9 +309,11 @@ export default function ModuleDetailPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-[15px] md:text-[16px] tv:text-[19px] font-semibold text-white truncate">
-                      {module.episodes.length === 1
-                        ? ep.title
-                        : `Level ${ep.levelNumber} · ${ep.title}`}
+                      {module.kind === 'Learn More'
+                        ? `Video ${ep.levelNumber} · ${ep.title}`
+                        : module.episodes.length === 1
+                          ? ep.title
+                          : `Level ${ep.levelNumber} · ${ep.title}`}
                     </p>
                     {isWatched && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#16a34a]/20 border border-[#22c55e]/30 text-[10.5px] font-semibold text-[#4ade80] shrink-0">

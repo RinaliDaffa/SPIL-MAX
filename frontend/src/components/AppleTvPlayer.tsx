@@ -80,7 +80,12 @@ export default function AppleTvPlayer({
       poster: ep.still || module.backdrop,
       thumbnail: ep.still || module.backdrop,
       duration: ep.durationSeconds,
-      season: module.episodes.length > 1 ? `Kurikulum ${module.title}` : undefined,
+      season:
+        module.kind === 'Learn More'
+          ? module.title
+          : module.episodes.length > 1
+            ? `Kurikulum ${module.title}`
+            : undefined,
     }));
 
     let lastObservedIndex = startIndex;
@@ -232,7 +237,9 @@ export default function AppleTvPlayer({
           artwork: module.poster,
           facts: [
             String(module.year),
-            `${module.episodes.length} Level`,
+            module.kind === 'Learn More'
+              ? `${module.episodes.length} Video`
+              : `${module.episodes.length} Level`,
             module.totalDurationText,
             'SPIL MAX HD',
           ],

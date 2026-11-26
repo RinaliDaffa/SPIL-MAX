@@ -7,7 +7,7 @@ import type {
   LearningModule,
 } from '@/types/learning';
 
-const MODULES_KEY = 'spil_max_modules_cache_v2';
+const MODULES_KEY = 'spil_max_modules_cache_v3';
 const PROGRESS_KEY = 'spil_max_progress_v2';
 const WATCHED_KEY = 'spil_max_watched_v2';
 const MYLIST_KEY = 'spil_max_mylist_v2';

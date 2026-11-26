@@ -304,26 +304,38 @@ export default function StudioPage() {
 
             <div>
               <label className="block text-[12px] font-medium text-white/60 mb-1.5">
-                Urutan Level
+                {modules.find((m) => m.id === epModuleId)?.kind === 'Learn More'
+                  ? 'Urutan Video Koleksi'
+                  : 'Urutan Level'}
               </label>
               <select
                 value={epLevelNumber}
                 onChange={(e) => {
                   const n = Number(e.target.value);
                   setEpLevelNumber(n);
-                  const names: Record<number, string> = {
-                    1: 'Level 1 · Dasar',
-                    2: 'Level 2 · Praktik',
-                    3: 'Level 3 · Mahir',
-                    4: 'Level 4 · Strategis',
-                  };
-                  setEpLevelLabel(names[n] || `Level ${n}`);
+                  const isLm = modules.find((m) => m.id === epModuleId)?.kind === 'Learn More';
+                  if (isLm) {
+                    setEpLevelLabel(`Video ${n} · Pak Faris`);
+                  } else {
+                    const names: Record<number, string> = {
+                      1: 'Level 1 · Dasar',
+                      2: 'Level 2 · Praktik',
+                      3: 'Level 3 · Mahir',
+                      4: 'Level 4 · Strategis',
+                    };
+                    setEpLevelLabel(names[n] || `Level ${n}`);
+                  }
                 }}
                 className={inputCls}
               >
-                {[1, 2, 3, 4, 5].map((n) => (
+                {(modules.find((m) => m.id === epModuleId)?.kind === 'Learn More'
+                  ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                  : [1, 2, 3, 4, 5]
+                ).map((n) => (
                   <option key={n} value={n} className="bg-[#141416] text-white">
-                    Level {n}
+                    {modules.find((m) => m.id === epModuleId)?.kind === 'Learn More'
+                      ? `Video ${n}`
+                      : `Level ${n}`}
                   </option>
                 ))}
               </select>

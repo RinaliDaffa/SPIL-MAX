@@ -1,134 +1,136 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Compass, Wrench, Briefcase, CheckCircle2, Upload } from 'lucide-react';
-import { useLearningStore } from '@/services/learningStore';
+import { Play, Plus, Check, RotateCcw, Upload } from 'lucide-react';
+import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
- * Learn More (`/learn-more`) — Dedicated Apple TV+ Showcase for Video Pak Faris
- * & Overview of SPIL MAX Competency Pillars (Core, Technical, Managerial).
+ * Learn More (`/learn-more`) — Dedicated Apple TV+ Collection Showcase
+ * for Koleksi Video Pak Faris (multi-video series + studio upload extensible).
  */
 export default function LearnMorePage() {
   const navigate = useNavigate();
-  const { modules } = useLearningStore();
+  const { modules, progress, watchedEpisodes, myList } = useLearningStore();
 
-  const farisModule = useMemo(
-    () =>
-      modules.find((m) => m.id === 'learn-more-pak-faris' || m.kind === 'Learn More') ||
-      modules[0],
+  const learnMoreModules = useMemo(
+    () => modules.filter((m) => m.kind === 'Learn More'),
     [modules]
   );
 
-  const coreCount = useMemo(() => modules.filter((m) => m.kind === 'Core').length, [modules]);
-  const techCount = useMemo(() => modules.filter((m) => m.kind === 'Technical').length, [modules]);
-  const mgrCount = useMemo(() => modules.filter((m) => m.kind === 'Managerial').length, [modules]);
+  const primaryCollection = learnMoreModules[0] || modules.find((m) => m.id === 'learn-more-pak-faris');
 
-  if (!farisModule) return null;
-  const ep = farisModule.episodes[0];
-  const meta = `1 Video  ·  ${farisModule.totalDurationText}  ·  ${farisModule.year}`;
+  const allCollectionVideos = useMemo(
+    () =>
+      learnMoreModules.flatMap((mod) =>
+        mod.episodes.map((ep, idx) => ({
+          mod,
+          ep,
+          seq: idx + 1,
+        }))
+      ),
+    [learnMoreModules]
+  );
 
-  const pillars = [
-    {
-      title: 'Core Competency',
-      count: `${coreCount} Modul · 4 Level Video`,
-      icon: Compass,
-      accent: 'bg-[#22c55e]',
-      path: '/core',
-    },
-    {
-      title: 'Technical Competency',
-      count: `${techCount} Modul · 4 Level Video`,
-      icon: Wrench,
-      accent: 'bg-[#d02030]',
-      path: '/technical',
-    },
-    {
-      title: 'Managerial Competency',
-      count: `${mgrCount} Modul · 3 Level Video`,
-      icon: Briefcase,
-      accent: 'bg-[#22c55e]',
-      path: '/managerial',
-    },
-  ];
+  if (!primaryCollection) return null;
+
+  const watchedSet = new Set(watchedEpisodes);
+  const inMyList = myList.includes(primaryCollection.id);
+
+  // Best resume video across Pak Faris collection
+  const resumeTarget = (() => {
+    for (const item of allCollectionVideos) {
+      const key = learningStore.keyOf(item.mod.id, item.ep.id);
+      const p = progress[key];
+      if (p && p.currentTime > 1 && p.duration > 0 && p.currentTime / p.duration < 0.9) {
+        return { ...item, isResume: true };
+      }
+    }
+    const firstUnwatched = allCollectionVideos.find(
+      (item) => !watchedSet.has(learningStore.keyOf(item.mod.id, item.ep.id))
+    );
+    return {
+      ...(firstUnwatched || allCollectionVideos[0]),
+      isResume: false,
+    };
+  })();
+
+  const meta = `${allCollectionVideos.length} Video  ·  ${primaryCollection.totalDurationText}  ·  ${primaryCollection.year}`;
 
   return (
-    <div className="min-h-screen pt-20 md:pt-24 tv:pt-32 pb-16 max-w-[1380px] tv:max-w-[1900px] mx-auto px-5 md:px-8 tv:px-14">
-      {/* ── Featured Video Pak Faris Hero Card ── */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b0b0e] shadow-2xl mb-10 md:mb-14">
-        <div className="grid grid-cols-1 lg:grid-cols-12">
-          {/* Interactive 16:9 Cinema Preview */}
-          <button
-            type="button"
-            data-tv-focus
-            onClick={() => navigate(`/tonton/${farisModule.slug}/${ep?.id || 'pak-faris-intro'}`)}
-            className="relative lg:col-span-7 aspect-video lg:aspect-auto lg:min-h-[420px] overflow-hidden group text-left focus:outline-none"
-          >
-            <img
-              src={farisModule.backdrop}
-              alt={farisModule.title}
-              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-            />
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, rgba(0,0,0,0.35) 100%)',
-              }}
-            />
+    <div className="overflow-x-hidden pb-14 md:pb-20">
+      {/* ── Apple TV+ Collection Hero Banner ── */}
+      <section className="relative w-full h-[68vh] sm:h-[72vh] md:h-[78vh]">
+        <picture>
+          <source
+            media="(max-width: 639px)"
+            srcSet={primaryCollection.poster || primaryCollection.backdrop}
+          />
+          <img
+            src={primaryCollection.backdrop || primaryCollection.poster}
+            alt={primaryCollection.title}
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </picture>
 
-            {/* Center Apple Liquid Glass Play Trigger */}
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-black/55 backdrop-blur-xl border border-white/25 flex items-center justify-center text-white shadow-2xl group-hover:scale-105 group-hover:bg-[#16a34a] transition-all">
-                <Play size={26} fill="currentColor" className="ml-1" />
-              </span>
-            </span>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top, #000000 0%, rgba(0,0,0,0.92) 28%, rgba(0,0,0,0.28) 66%, rgba(0,0,0,0.48) 100%)',
+          }}
+        />
 
-            <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/65 backdrop-blur-md border border-white/12 text-[11px] font-semibold uppercase tracking-[0.07em] text-white/90">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
-              <span>Klik untuk Memutar Layar Penuh</span>
-            </span>
-          </button>
-
-          {/* Copy & Actions */}
-          <div className="lg:col-span-5 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-white/[0.08] border border-white/12 text-[11px] tv:text-[12.5px] font-semibold tracking-[0.08em] uppercase text-white/90 mb-4">
-              <span className="w-2 h-2 rounded-full bg-[#d02030]" />
-              <span>Learn More · Video Pak Faris</span>
+        <div className="absolute inset-x-0 bottom-0 px-5 md:px-8 tv:px-14 pb-8 md:pb-12 max-w-[1600px] tv:max-w-[2200px] mx-auto">
+          <div className="p-in max-w-2xl tv:max-w-4xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/55 border border-white/15 backdrop-blur-md text-[11px] tv:text-[13px] font-semibold tracking-[0.08em] uppercase text-white/92 mb-3.5">
+              <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+              <span>Learn More · Seri Eksekutif</span>
             </div>
 
-            <h1 className="p-display text-[26px] sm:text-[32px] md:text-[38px] tv:text-[48px] text-white mb-3">
-              {farisModule.title}
+            <h1 className="p-display text-[30px] sm:text-[42px] md:text-[54px] tv:text-[70px] text-white mb-3">
+              {primaryCollection.title}
             </h1>
 
-            {/* Clicked detail metadata line */}
-            <p className="text-[13px] md:text-[14px] tv:text-[16px] font-medium p-dim mb-5">
+            <p className="text-[13px] md:text-[14.5px] tv:text-[17px] font-medium p-dim mb-4">
               {meta}
             </p>
 
-            <p className="text-[13.5px] md:text-[14.5px] tv:text-[16.5px] text-white/80 leading-relaxed mb-6">
-              {farisModule.summary}
+            <p className="text-[13.5px] md:text-[15px] tv:text-[17.5px] text-white/80 leading-relaxed max-w-xl tv:max-w-3xl mb-6 line-clamp-3">
+              {primaryCollection.summary}
             </p>
 
-            <ul className="space-y-2 mb-7">
-              {farisModule.objectives.map((pt, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-2.5 text-[12.5px] md:text-[13.5px] text-white/80"
+            <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
+              {resumeTarget?.ep && (
+                <button
+                  type="button"
+                  data-tv-focus
+                  data-tv-hero-primary
+                  onClick={() =>
+                    navigate(`/tonton/${resumeTarget.mod.slug}/${resumeTarget.ep.id}`)
+                  }
+                  className="p-btn"
                 >
-                  <CheckCircle2 size={15} className="shrink-0 mt-0.5 text-[#22c55e]" />
-                  <span>{pt}</span>
-                </li>
-              ))}
-            </ul>
+                  {resumeTarget.isResume ? (
+                    <RotateCcw size={16} />
+                  ) : (
+                    <Play size={16} fill="currentColor" />
+                  )}
+                  <span>
+                    {resumeTarget.isResume
+                      ? `Lanjutkan Video ${resumeTarget.seq}`
+                      : `Putar Video ${resumeTarget.seq}`}
+                  </span>
+                </button>
+              )}
 
-            <div className="flex flex-wrap items-center gap-2.5">
               <button
                 type="button"
                 data-tv-focus
-                onClick={() => navigate(`/tonton/${farisModule.slug}/${ep?.id || 'pak-faris-intro'}`)}
-                className="p-btn"
+                onClick={() => learningStore.toggleMyList(primaryCollection.id)}
+                className={`p-btn p-btn-ghost ${inMyList ? '!bg-white/22' : ''}`}
               >
-                <Play size={16} fill="currentColor" />
-                <span>Putar Video Pak Faris</span>
+                {inMyList ? <Check size={16} strokeWidth={2.6} /> : <Plus size={17} strokeWidth={2.4} />}
+                <span>{inMyList ? 'Tersimpan di Daftar Saya' : 'Daftar Saya'}</span>
               </button>
 
               <button
@@ -138,48 +140,95 @@ export default function LearnMorePage() {
                 className="p-btn p-btn-ghost"
               >
                 <Upload size={15} />
-                <span>Ganti Video di Studio</span>
+                <span>Tambah Video Koleksi</span>
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── Three SPIL Competency Pillars ── */}
-      <div>
-        <div className="inline-flex items-center gap-2.5 mb-4">
+      {/* ── Collection Grid of All Pak Faris Videos ── */}
+      <section
+        data-row
+        className="max-w-[1600px] tv:max-w-[2200px] mx-auto px-5 md:px-8 tv:px-14 pt-8 md:pt-12"
+      >
+        <div className="inline-flex items-center gap-2.5 mb-6">
           <span className="spil-bar-green" />
-          <h2 className="p-title text-[19px] md:text-[23px] tv:text-[28px] text-white">
-            Tiga Pilar Kompetensi SPIL
+          <h2 className="p-title text-[20px] md:text-[24px] tv:text-[30px] text-white">
+            Daftar Video Pak Faris
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {pillars.map((p) => {
-            const Icon = p.icon;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          {allCollectionVideos.map(({ mod, ep, seq }) => {
+            const key = learningStore.keyOf(mod.id, ep.id);
+            const isWatched = watchedSet.has(key);
+            const p = progress[key];
+            const pct =
+              !isWatched && p && p.duration > 0
+                ? Math.min(100, Math.round((p.currentTime / p.duration) * 100))
+                : 0;
+
             return (
               <button
-                key={p.title}
+                key={key}
                 type="button"
                 data-card
-                onClick={() => navigate(p.path)}
-                className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.09] text-left transition-all group"
+                onClick={() => navigate(`/tonton/${mod.slug}/${ep.id}`)}
+                className="p-card-hit group/v text-left focus:outline-none flex flex-col"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <span className="w-10 h-10 rounded-xl bg-white/[0.07] border border-white/10 flex items-center justify-center text-white">
-                    <Icon size={19} />
+                <div className="p-card aspect-video w-full">
+                  <img
+                    src={ep.still || mod.backdrop}
+                    alt={ep.title}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.25) 100%)',
+                    }}
+                  />
+
+                  <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2 py-[3px] rounded-md bg-black/65 backdrop-blur-md border border-white/12 text-[9.5px] tv:text-[11px] font-semibold tracking-[0.06em] uppercase text-white/92">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                    <span>Video {seq} · {ep.durationText}</span>
                   </span>
-                  <span className={`w-2 h-2 rounded-full ${p.accent}`} />
+
+                  {isWatched && (
+                    <span
+                      aria-label="Selesai ditonton"
+                      className="absolute top-2.5 right-2.5 w-[22px] h-[22px] rounded-full bg-[#16a34a] shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center justify-center text-white"
+                    >
+                      <Check size={13} strokeWidth={3.2} />
+                    </span>
+                  )}
+
+                  {pct > 0 && pct < 99 && (
+                    <span className="absolute bottom-0 inset-x-0 h-[3px] bg-white/20">
+                      <span className="block h-full spil-progress-fill" style={{ width: `${pct}%` }} />
+                    </span>
+                  )}
+
+                  <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/v:opacity-100 group-focus-visible/v:opacity-100 transition-opacity pointer-events-none">
+                    <span className="w-12 h-12 rounded-full bg-black/55 backdrop-blur-md border border-white/20 flex items-center justify-center text-white">
+                      <Play size={17} fill="currentColor" className="ml-0.5" />
+                    </span>
+                  </span>
                 </div>
-                <p className="text-[17px] tv:text-[20px] font-semibold text-white mb-1 group-hover:text-white">
-                  {p.title}
-                </p>
-                <p className="text-[12.5px] tv:text-[14px] p-dim">{p.count}</p>
+
+                <div className="mt-2.5 px-0.5">
+                  <p className="text-[14px] md:text-[15px] tv:text-[17.5px] font-medium text-white/92 truncate">
+                    {ep.title}
+                  </p>
+                </div>
               </button>
             );
           })}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
