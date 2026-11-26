@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, X, Check } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import HeroPure from '@/components/HeroPure';
 import RowPure from '@/components/RowPure';
 import CardPure from '@/components/CardPure';
@@ -8,7 +8,7 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
 
 /**
  * SPIL MAX Home Page (Beranda)
- * Exact Section Order:
+ * Unified Apple TV+ Streaming Experience:
  * 1. Hero Rekomendasi Video
  * 2. Lanjutkan Belajar
  * 3. Modul Wajib
@@ -16,7 +16,7 @@ import { learningStore, useLearningStore } from '@/services/learningStore';
  * 5. Core Competency
  * 6. Technical Competency
  * 7. Managerial Competency
- * 8. Learn More (Koleksi Video Pak Faris — Horizontal Video Collection Rail)
+ * 8. Learn More
  */
 export default function HomePage() {
   const navigate = useNavigate();
@@ -32,14 +32,14 @@ export default function HomePage() {
     [modules]
   );
 
-  const { watchedSet, watchedModuleIds, moduleProgressMap, continueItems } = useMemo(() => {
-    const wSet = new Set(watchedEpisodes);
+  const { watchedModuleIds, moduleProgressMap, continueItems } = useMemo(() => {
+    const watchedSet = new Set(watchedEpisodes);
     const modWatched = new Set<string>();
     const modProg: Record<string, number> = {};
 
     for (const m of modules) {
       const doneCount = m.episodes.filter((e) =>
-        wSet.has(learningStore.keyOf(m.id, e.id))
+        watchedSet.has(learningStore.keyOf(m.id, e.id))
       ).length;
       if (doneCount === m.episodes.length && m.episodes.length > 0) {
         modWatched.add(m.id);
@@ -68,7 +68,6 @@ export default function HomePage() {
       .filter((x): x is NonNullable<typeof x> => Boolean(x));
 
     return {
-      watchedSet: wSet,
       watchedModuleIds: modWatched,
       moduleProgressMap: modProg,
       continueItems: cwList,
@@ -79,18 +78,7 @@ export default function HomePage() {
   const coreModules = useMemo(() => modules.filter((m) => m.kind === 'Core'), [modules]);
   const technicalModules = useMemo(() => modules.filter((m) => m.kind === 'Technical'), [modules]);
   const managerialModules = useMemo(() => modules.filter((m) => m.kind === 'Managerial'), [modules]);
-
-  // Flatten all videos from `Learn More` modules (Koleksi Video Pak Faris) into a collection rail
-  const learnMoreVideos = useMemo(() => {
-    const lmModules = modules.filter((m) => m.kind === 'Learn More');
-    return lmModules.flatMap((mod) =>
-      mod.episodes.map((ep, idx) => ({
-        mod,
-        ep,
-        index: idx + 1,
-      }))
-    );
-  }, [modules]);
+  const learnMoreModules = useMemo(() => modules.filter((m) => m.kind === 'Learn More'), [modules]);
 
   return (
     <div className="pb-6 md:pb-16">
@@ -114,7 +102,7 @@ export default function HomePage() {
               {continueItems.map(({ mod, ep, pct, minsLeft }) => {
                 const badgeText =
                   mod.kind === 'Learn More'
-                    ? `Video ${ep.levelNumber} · Sisa ${minsLeft} Menit`
+                    ? `Bagian ${ep.levelNumber} · Sisa ${minsLeft} Menit`
                     : `Level ${ep.levelNumber} · Sisa ${minsLeft} Menit`;
                 return (
                   <div
@@ -166,7 +154,7 @@ export default function HomePage() {
 
                     <div className="mt-2.5 px-0.5">
                       <p className="text-[13px] md:text-[13.5px] tv:text-[16px] font-medium text-white/92 truncate">
-                        {mod.kind === 'Learn More' ? ep.title : mod.title}
+                        {mod.title}
                       </p>
                     </div>
                   </div>
@@ -243,98 +231,16 @@ export default function HomePage() {
           moduleProgressMap={moduleProgressMap}
         />
 
-        {/* ── 7. Learn More (Koleksi Video Pak Faris — Multi-Video Horizontal Rail) ── */}
-        {learnMoreVideos.length > 0 && (
-          <section data-row className="mb-10 md:mb-14 tv:mb-16">
-            <div className="px-5 md:px-8 tv:px-14 mb-3.5 md:mb-4">
-              <button
-                type="button"
-                data-tv-focus
-                onClick={() => navigate('/learn-more')}
-                className="group/lm inline-flex items-center gap-2.5 text-left"
-              >
-                <span className="spil-bar-green" />
-                <h2 className="p-title text-[18px] md:text-[22px] tv:text-[28px] text-white">
-                  Learn More
-                </h2>
-                <span className="text-[13px] tv:text-[15px] text-white/35 md:text-white/0 group-hover/lm:text-white/65 transition-colors">
-                  Lihat Koleksi ›
-                </span>
-              </button>
-            </div>
-
-            <div className="p-rail p-marge gap-3.5 md:gap-4 tv:gap-6 px-5 md:px-8 tv:px-14 pb-1.5">
-              {learnMoreVideos.map(({ mod, ep, index }) => {
-                const key = learningStore.keyOf(mod.id, ep.id);
-                const isDone = watchedSet.has(key);
-                const p = progress[key];
-                const pct =
-                  !isDone && p && p.duration > 0
-                    ? Math.min(100, Math.round((p.currentTime / p.duration) * 100))
-                    : 0;
-
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    data-card
-                    onClick={() => navigate(`/tonton/${mod.slug}/${ep.id}`)}
-                    title={ep.title}
-                    className="p-card-hit group/lmcard shrink-0 w-[252px] sm:w-[284px] md:w-[330px] tv:w-[410px] text-left focus:outline-none"
-                  >
-                    <div className="p-card aspect-video">
-                      <img
-                        src={ep.still || mod.backdrop}
-                        alt={ep.title}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          background:
-                            'linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.25) 100%)',
-                        }}
-                      />
-
-                      <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1.5 px-2 py-[3px] rounded-md bg-black/65 backdrop-blur-md border border-white/12 text-[9.5px] tv:text-[11px] font-semibold tracking-[0.06em] uppercase text-white/92">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
-                        <span>Pak Faris · Video {index}</span>
-                      </span>
-
-                      {isDone && (
-                        <span
-                          aria-label="Selesai ditonton"
-                          className="absolute top-2.5 right-2.5 w-[22px] h-[22px] tv:w-[26px] tv:h-[26px] rounded-full bg-[#16a34a] shadow-[0_2px_8px_rgba(0,0,0,0.6)] flex items-center justify-center text-white"
-                        >
-                          <Check size={13} strokeWidth={3.2} />
-                        </span>
-                      )}
-
-                      {pct > 0 && pct < 99 && (
-                        <span className="absolute bottom-0 inset-x-0 h-[3px] bg-white/20">
-                          <span className="block h-full spil-progress-fill" style={{ width: `${pct}%` }} />
-                        </span>
-                      )}
-
-                      <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/lmcard:opacity-100 group-focus-visible/lmcard:opacity-100 transition-opacity pointer-events-none">
-                        <span className="w-11 h-11 tv:w-14 tv:h-14 rounded-full bg-black/55 backdrop-blur-md border border-white/20 flex items-center justify-center text-white">
-                          <Play size={16} fill="currentColor" className="ml-0.5" />
-                        </span>
-                      </span>
-                    </div>
-
-                    <div className="mt-2.5 px-0.5">
-                      <p className="text-[13px] md:text-[13.5px] tv:text-[16px] font-medium text-white/92 truncate">
-                        {ep.title}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-        )}
+        {/* ── 7. Learn More (Identical Apple TV+ Module Rail for L&D Topics) ── */}
+        <RowPure
+          title="Learn More"
+          accent="green"
+          seeAllPath="/learn-more"
+          items={learnMoreModules}
+          variant="wide"
+          watchedModuleIds={watchedModuleIds}
+          moduleProgressMap={moduleProgressMap}
+        />
 
         {/* ── Minimal Apple TV+ Footer ── */}
         <footer className="px-5 md:px-8 tv:px-14 pt-8 pb-4 border-t border-white/[0.08] mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[12px] tv:text-[14px] p-faint">

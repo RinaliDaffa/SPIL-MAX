@@ -136,9 +136,10 @@ export function seedInitialCatalogIfEmpty() {
   const existingRow = db.prepare('SELECT COUNT(*) as cnt FROM modules').get() as { cnt: number };
   const wasEmpty = existingRow.cnt === 0;
 
-  // Clean up retired external demo IDs & migrate any legacy kind labels idempotently
-  db.prepare(`DELETE FROM modules WHERE id IN ('green-maritime-ext', 'ai-supply-chain-ext')`).run();
-  db.prepare(`DELETE FROM episodes WHERE id = 'pak-faris-intro'`).run();
+  // Clean up retired demo IDs & migrate any legacy kind labels idempotently
+  db.prepare(
+    `DELETE FROM modules WHERE id IN ('green-maritime-ext', 'ai-supply-chain-ext', 'learn-more-pak-faris')`
+  ).run();
   db.prepare(`UPDATE modules SET kind = 'Technical' WHERE kind = 'Operasional & K3'`).run();
 
   const now = Date.now();

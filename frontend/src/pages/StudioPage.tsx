@@ -315,7 +315,7 @@ export default function StudioPage() {
                   setEpLevelNumber(n);
                   const isLm = modules.find((m) => m.id === epModuleId)?.kind === 'Learn More';
                   if (isLm) {
-                    setEpLevelLabel(`Video ${n} · Pak Faris`);
+                    setEpLevelLabel(`Bagian ${n}`);
                   } else {
                     const names: Record<number, string> = {
                       1: 'Level 1 · Dasar',

@@ -8,13 +8,11 @@ import {
   Wrench,
   Briefcase,
   Bookmark,
-  PlayCircle,
+  Sparkles,
   Clock,
   Tv,
   RotateCcw,
   CheckCircle2,
-  Sparkles,
-  PlusCircle,
 } from 'lucide-react';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 import SearchPure from './SearchPure';
@@ -25,7 +23,7 @@ const NAV_ITEMS = [
   { id: 'technical', label: 'Technical', mobileLabel: 'Technical', path: '/technical', icon: Wrench },
   { id: 'managerial', label: 'Managerial', mobileLabel: 'Managerial', path: '/managerial', icon: Briefcase },
   { id: 'mylist', label: 'Daftar Saya', mobileLabel: 'Daftar', path: '/daftar-saya', icon: Bookmark },
-  { id: 'learnmore', label: 'Learn More', mobileLabel: 'Learn More', path: '/learn-more', icon: PlayCircle },
+  { id: 'learnmore', label: 'Learn More', mobileLabel: 'Learn More', path: '/learn-more', icon: Sparkles },
 ] as const;
 
 interface MenuRowProps {
@@ -51,7 +49,7 @@ function MenuRow({ icon: Icon, children, onClick, badge }: MenuRowProps) {
 
 /**
  * Apple TV+ Transparent Liquid Glass Navigation
- * Tabs: Beranda, Core, Technical, Managerial, Daftar Saya, Learn More (Video Pak Faris)
+ * Tabs: Beranda, Core, Technical, Managerial, Daftar Saya, Learn More
  */
 export default function NavPure() {
   const navigate = useNavigate();
@@ -82,8 +80,7 @@ export default function NavPure() {
   }, [menuOpen]);
 
   const activeItem =
-    NAV_ITEMS.find((i) => (i.path === '/' ? pathname === '/' : pathname.startsWith(i.path)))?.id ||
-    (pathname.startsWith('/modul/video-pak-faris') ? 'learnmore' : null);
+    NAV_ITEMS.find((i) => (i.path === '/' ? pathname === '/' : pathname.startsWith(i.path)))?.id || null;
 
   const totalEpisodes = modules.reduce((acc, m) => acc + m.episodes.length, 0);
   const completedCount = watchedEpisodes.length;
@@ -302,28 +299,6 @@ export default function NavPure() {
 
               <div className="p-1.5">
                 <MenuRow
-                  icon={PlusCircle}
-                  badge="CMS"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigate('/studio');
-                  }}
-                >
-                  Studio Kurator (Tambah Modul/Video)
-                </MenuRow>
-
-                <MenuRow
-                  icon={PlayCircle}
-                  badge="Pak Faris"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    navigate('/learn-more');
-                  }}
-                >
-                  Learn More (Video Pak Faris)
-                </MenuRow>
-
-                <MenuRow
                   icon={CheckCircle2}
                   onClick={() => {
                     setMenuOpen(false);
@@ -362,7 +337,7 @@ export default function NavPure() {
                     navigate('/kompetensi');
                   }}
                 >
-                  Semua Kompetensi SPIL
+                  Semua Materi Pembelajaran
                 </MenuRow>
 
                 <div className="my-1.5 mx-3.5 border-t border-white/[0.08]" />

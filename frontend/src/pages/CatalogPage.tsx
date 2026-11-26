@@ -4,12 +4,12 @@ import GridPure from '@/components/GridPure';
 import { learningStore, useLearningStore } from '@/services/learningStore';
 
 interface CatalogPageProps {
-  mode: 'all' | 'core' | 'technical' | 'managerial' | 'mandatory';
+  mode: 'all' | 'core' | 'technical' | 'managerial' | 'learn-more' | 'mandatory';
 }
 
 /**
- * SPIL MAX Filterable Catalog Page (`/core`, `/technical`, `/managerial`, `/wajib`, `/kompetensi`).
- * Clean White Page Title without grey subtitle clutter underneath.
+ * SPIL MAX Filterable Catalog Page (`/core`, `/technical`, `/managerial`, `/learn-more`, `/wajib`, `/kompetensi`).
+ * Unified Apple TV+ catalog layout across all competency & L&D categories.
  */
 export default function CatalogPage({ mode }: CatalogPageProps) {
   const [filters, setFilters] = useState<CatalogFilters>(EMPTY_FILTERS);
@@ -23,8 +23,9 @@ export default function CatalogPage({ mode }: CatalogPageProps) {
     if (mode === 'core') return modules.filter((m) => m.kind === 'Core');
     if (mode === 'technical') return modules.filter((m) => m.kind === 'Technical');
     if (mode === 'managerial') return modules.filter((m) => m.kind === 'Managerial');
+    if (mode === 'learn-more') return modules.filter((m) => m.kind === 'Learn More');
     if (mode === 'mandatory') return modules.filter((m) => m.mandatoryFromSuperior);
-    return modules.filter((m) => m.kind !== 'Learn More');
+    return modules;
   }, [mode, modules]);
 
   const { watchedModuleIds, moduleProgressMap } = useMemo(() => {
@@ -70,10 +71,11 @@ export default function CatalogPage({ mode }: CatalogPageProps) {
   }, [baseModules, filters, watchedModuleIds]);
 
   const headerCopy = {
-    all: { title: 'Semua Kompetensi', accent: 'green' as const },
+    all: { title: 'Semua Materi Pembelajaran', accent: 'green' as const },
     core: { title: 'Core Competency', accent: 'green' as const },
     technical: { title: 'Technical Competency', accent: 'green' as const },
     managerial: { title: 'Managerial Competency', accent: 'green' as const },
+    'learn-more': { title: 'Learn More', accent: 'green' as const },
     mandatory: { title: 'Modul Wajib', accent: 'red' as const },
   }[mode];
 
@@ -109,7 +111,7 @@ export default function CatalogPage({ mode }: CatalogPageProps) {
         {filtered.length > 0 ? (
           <GridPure
             items={filtered}
-            variant={mode === 'technical' || mode === 'mandatory' ? 'wide' : 'poster'}
+            variant={mode === 'technical' || mode === 'mandatory' || mode === 'learn-more' ? 'wide' : 'poster'}
             watchedModuleIds={watchedModuleIds}
             moduleProgressMap={moduleProgressMap}
           />

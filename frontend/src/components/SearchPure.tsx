@@ -67,10 +67,10 @@ export default function SearchPure({ onClose }: SearchPureProps) {
       'Core',
       'Technical',
       'Managerial',
-      'Pak Faris',
+      'Learn More',
       'Port Management',
       'Safety K3',
-      'Sizing Up People',
+      'Great Thinker',
       'LARA',
     ],
     []
